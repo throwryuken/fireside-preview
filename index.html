@@ -579,38 +579,31 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
     e.rescan = () => e.pickFolder();
     e.urlFor = (b, t) => b.tracks[t].url || (b.tracks[t].url = opts.makeAudio(b, t));
 
-    /** Files from <input webkitdirectory>: root files are single books, each sub-folder is a book. */
+    /** Files from <input webkitdirectory>, grouped by FS.groupFiles (same rules as the Android scanner). */
     e.loadFiles = async (files, makeCover) => {
-      const groups = {};
-      let rootName = '';
-      for (const f of files) {
-        const parts = (f.webkitRelativePath || f.name).split('/');
-        rootName = parts.length > 1 ? parts[0] : '';
-        const rel = parts.length > 1 ? parts.slice(1) : parts;
-        const key = rel.length > 1 ? rel[rel.length - 2] : '\u0000' + rel[0];
-        (groups[key] = groups[key] || []).push({ f, rel: rel.join('/'), name: rel[rel.length - 1], parent: rel.length > 2 ? rel[rel.length - 3] : '' });
-      }
+      const list = Array.from(files);
+      const rootName = list.length && (list[0].webkitRelativePath || '').includes('/') ? list[0].webkitRelativePath.split('/')[0] : '';
+      const groups = FS.groupFiles(list.map((f) => ({ path: f.webkitRelativePath || f.name, size: f.size, f })));
       const books = [];
-      const nat = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
-      for (const k of Object.keys(groups)) {
-        const g = groups[k];
-        const audios = g.filter((x) => AUDIO_RE.test(x.name)).sort((a, b) => nat.compare(a.rel, b.rel));
-        if (!audios.length) continue;
-        const img = g.find((x) => /^(cover|folder|front)\.(jpe?g|png|webp)$/i.test(x.name)) || g.find((x) => /\.(jpe?g|png|webp)$/i.test(x.name));
-        const single = k[0] === '\u0000';
-        const name = single ? audios[0].name.replace(AUDIO_RE, '') : k;
-        const id = 'w' + hash((rootName || '') + '/' + (single ? audios[0].rel : k));
+      for (const g of groups) {
+        const audios = g.tracks;
+        const single = !g.folder;
+        const name = g.title;
+        const id = g.id;
+        const img = g.images.find((x) => /^(cover|folder|front)\.(jpe?g|png|webp)$/i.test(x.name)) ||
+          (single ? g.images.find((x) => x.name.replace(/\.[^.]+$/, '').toLowerCase() === name.toLowerCase()) : (g.images.length === 1 ? g.images[0] : null));
         const tracks = [];
         for (const a of audios) tracks.push({ name: a.name, d: await durationOf(a.f), url: URL.createObjectURL(a.f) });
         // Cover: embedded art in the first file, then cover/folder/front image in the folder, then the title tile.
         let art = null;
         try { art = await FS.Art.fromFile(audios[0].f); } catch (err) { art = null; }
-        const folderImg = img && (!single || /^(cover|folder|front)\./i.test(img.name)) ? img.f : null;
+        const folderImg = img ? img.f : null;
         const url = art ? URL.createObjectURL(art) : folderImg ? URL.createObjectURL(folderImg) : makeCover(name);
         books.push({ id, title: name, author: '', folder: !single, added: Date.now(), tracks, ch: [],
-          tags: { name, parent: audios[0].parent || '' }, art: art ? 'embedded' : folderImg ? 'folder' : 'none',
+          tags: { name, parent: g.parent || '' }, art: art ? 'embedded' : folderImg ? 'folder' : 'none',
           cover: url });
       }
+      const nat = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
       books.sort((a, b) => nat.compare(a.title, b.title));
       if (e.demo) { e.folders = []; cur = null; }
       const fname = rootName || 'Picked folder';
@@ -629,6 +622,56 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
     e.useBooks = (books, root, demo) => { e.books = books; e.root = root; e.demo = demo; if (demo) e.folders = []; e.reload(); push(); };
     e.current = () => cur;
     return e;
+  };
+
+  // ---------- picked-folder grouping (browser preview), same rules as Scanner.kt ----------
+  // - audio directly in the picked folder: one book per file
+  // - a folder holding audio directly: one book (plus audio in CD1/CD2-style sub-folders up to 3 levels down)
+  // - a folder whose audio is only several .m4b files: one book per file
+  // - folders without audio of their own are containers, at any depth
+  // - hidden entries (".x", "._01.mp3") and system folders are skipped; a .nomedia file does not hide a folder
+  // - ids come from the book itself (folder name + its files' names and sizes), not from which folder was picked
+  const SYSTEM_DIRS = new Set(['android', 'lost.dir', '$recycle.bin', 'system volume information', 'found.000']);
+  FS.skipName = (n) => n.startsWith('.') || SYSTEM_DIRS.has(n.toLowerCase());
+  FS.groupFiles = function (entries) {
+    const nat = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
+    const dirs = new Map();               // dir path -> { audio: [], images: [] }
+    let rootDir = null;
+    for (const en of entries) {
+      const parts = en.path.split('/');
+      if (parts.some(FS.skipName)) continue;
+      const dir = parts.slice(0, -1).join('/');
+      if (rootDir === null) rootDir = parts.length > 1 ? parts[0] : '';
+      const name = parts[parts.length - 1];
+      const d = dirs.get(dir) || { audio: [], images: [] }; dirs.set(dir, d);
+      const x = Object.assign({}, en, { name });
+      if (AUDIO_RE.test(name)) d.audio.push(x); else if (/\.(jpe?g|png|webp)$/i.test(name)) d.images.push(x);
+    }
+    const parentOf = (p) => p.includes('/') ? p.slice(0, p.lastIndexOf('/')) : '';
+    const baseOf = (p) => p.slice(p.lastIndexOf('/') + 1);
+    const bookDirs = new Set();
+    const out = [];
+    const single = (x, dir) => ({ id: 'w' + hash('file|' + x.name + '|' + (x.size || 0)), title: x.name.replace(AUDIO_RE, ''), folder: false,
+      tracks: [x], images: (dirs.get(dir) || { images: [] }).images, parent: dir ? baseOf(dir) : '' });
+    const sorted = [...dirs.keys()].sort((a, b) => a.split('/').length - b.split('/').length || nat.compare(a, b));
+    for (const dir of sorted) {
+      const d = dirs.get(dir);
+      if (!d.audio.length) continue;
+      if (dir === rootDir || dir === '') { d.audio.forEach((x) => out.push(single(x, dir))); continue; }
+      if (d.audio.length > 1 && d.audio.every((x) => /\.m4b$/i.test(x.name))) { d.audio.forEach((x) => out.push(single(x, dir))); continue; }
+      // part of a book folder above it (CD1, CD2 ...)?
+      let up = parentOf(dir), lv = 1, owner = null;
+      while (up && up !== rootDir && lv <= 4) { if (bookDirs.has(up)) { owner = up; break; } up = parentOf(up); lv++; }
+      if (owner) { const b = out.find((o) => o.dir === owner); b.tracks.push(...d.audio.map((x) => Object.assign({}, x, { rel: dir.slice(owner.length + 1) + '/' + x.name }))); continue; }
+      bookDirs.add(dir);
+      out.push({ dir, title: baseOf(dir), folder: true, tracks: d.audio.map((x) => Object.assign({}, x, { rel: x.name })), images: d.images, parent: baseOf(parentOf(dir)) });
+    }
+    for (const b of out) {
+      if (!b.folder) continue;
+      b.tracks.sort((a, c) => nat.compare(a.rel, c.rel));
+      b.id = 'w' + hash('dir|' + b.title + '|' + b.tracks.map((x) => x.rel + ':' + (x.size || 0)).join('|'));
+    }
+    return out.sort((a, b) => nat.compare(a.title, b.title));
   };
 
   // ---------- embedded cover art for the browser preview (same rules as Media.kt: ID3 APIC/PIC, MP4 covr) ----------
@@ -717,7 +760,7 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
   const FS = window.FS;
   const $ = (s, r) => (r || document).querySelector(s);
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const VERSION = '1.0.1';
+  const VERSION = '1.0.2';
   const TPL_KEY = 'fireside.recapTemplate';
 
   // ---------- icons (inline SVG, currentColor) ----------
