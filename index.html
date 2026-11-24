@@ -265,7 +265,7 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
 (function (root) {
   'use strict';
   const FS = {};
-  const AUDIO_RE = /\.(mp3|m4b|m4a|aac|ogg|opus|flac|wav)$/i;
+  const AUDIO_RE = /\.(mp3|m4b|m4a|mp4|aac|ogg|opus|flac|wav)$/i;
 
   // ---------- speed ----------
   FS.STEP = 0.05;
@@ -596,16 +596,23 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
         const single = !g.folder;
         const name = g.title;
         const id = g.id;
-        const img = ['embeddedcover', 'cover', 'folder', 'front'].map((n) => g.images.find((x) => x.name.replace(/\.(jpe?g|png|webp)$/i, '').toLowerCase() === n)).find(Boolean) ||
-          (single ? g.images.find((x) => x.name.replace(/\.[^.]+$/, '').toLowerCase() === name.toLowerCase()) : (g.images.length === 1 ? g.images[0] : null));
+        // cover after embedded art: same-named image, then EmbeddedCover/cover/folder/front, then (book folder) the only image
+        const pickN = FS.pickImage(g.images.map((x) => x.name), audios.length === 1 ? audios[0].name : null, !single);
+        const img = pickN ? g.images.find((x) => x.name === pickN) : null;
         const tracks = [];
         for (const a of audios) tracks.push({ name: a.name, d: await durationOf(a.f), url: URL.createObjectURL(a.f) });
+        // chapters from a .cue: same name as the file, or (book folder with one file) the only .cue there
+        let ch = [];
+        if (audios.length === 1 && g.cues && g.cues.length) {
+          const cue = g.cues.filter((x) => FS.sameName(x.name, audios[0].name)).sort((p, q) => p.name.length - q.name.length)[0] || (!single && g.cues.length === 1 ? g.cues[0] : null);
+          if (cue && cue.f) { try { ch = FS.parseCue(await cue.f.text(), tracks[0].d); } catch (err) { ch = []; } }
+        }
         // Cover: embedded art in the first file, then cover/folder/front image in the folder, then the title tile.
         let art = null;
         try { art = await FS.Art.fromFile(audios[0].f); } catch (err) { art = null; }
         const folderImg = img ? img.f : null;
         const url = art ? URL.createObjectURL(art) : folderImg ? URL.createObjectURL(folderImg) : makeCover(name);
-        books.push({ id, title: name, author: '', folder: !single, added: Date.now(), tracks, ch: [],
+        books.push({ id, title: name, author: '', folder: !single, added: Date.now(), tracks, ch,
           tags: { name, parent: g.parent || '' }, art: art ? 'embedded' : folderImg ? 'folder' : 'none',
           cover: url });
       }
@@ -613,7 +620,7 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
       books.sort((a, b) => nat.compare(a.title, b.title));
       if (e.demo) { e.folders = []; cur = null; }
       const fname = rootName || 'Picked folder';
-      e.folders = e.folders.filter((f) => f.name !== fname).concat([{ name: fname, books, decisions: groups.decisions, ms: Date.now() - t0 }]);
+      e.folders = e.folders.filter((f) => f.name !== fname).concat([{ name: fname, books, decisions: groups.decisions, notes: groups.notes, ms: Date.now() - t0 }]);
       e.demo = false; mergeFolders();
       e.reload(); push();
     };
@@ -630,11 +637,82 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
     return e;
   };
 
+  // ---------- book names (same rules as Names.kt) ----------
+  const STRIP_EXT = new Set(['mp4', 'm4b', 'm4a', 'mp3', 'aac', 'ogg', 'opus', 'flac', 'wav', 'jpg', 'jpeg', 'png', 'webp', 'cue', 'nfo', 'txt']);
+  const COPY_RE = /\s*[(\[]\s*\d{1,3}\s*[)\]]\s*$/;
+  FS.fixColons = (x) => String(x).replace(/[\uA789\u2236\uFF1A\uFE55\uFE13\u02D0]/g, ':');
+  /** "Bloodline Cradle, Book 9.m4b (1).mp4" -> "Bloodline Cradle, Book 9" */
+  FS.stem = function (name) {
+    let x = String(name).trim();
+    for (let i = 0; i < 8; i++) {
+      const t = x.replace(COPY_RE, '').trim(); const dot = t.lastIndexOf('.');
+      const ext = dot > 0 ? t.slice(dot + 1).toLowerCase() : '';
+      const u = (STRIP_EXT.has(ext) ? t.slice(0, dot) : t).trim();
+      if (u === x) return x; x = u;
+    }
+    return x;
+  };
+  FS.displayTitle = (n) => FS.fixColons(FS.stem(n)).replace(/\s+/g, ' ').trim() || n;
+  const TRACKY = /^(\d{1,4}([\s._-].*)?|(track|chapter|chap|ch|part|pt|disc|disk|cd|kapitel|teil)\s*[-_.#]?\s*\d{1,4}\b.*|.*\b(track|chapter|chap|part|pt|disc|disk|cd)\s*[-_.#]?\s*\d{1,4})$/i;
+  FS.looksLikeTrack = (n) => TRACKY.test(FS.stem(n).trim());
+  const words = (x) => String(x).toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+  FS.normKey = function (name, authors) {
+    let x = FS.fixColons(FS.stem(name));
+    for (const a of (authors || []).filter((y) => y && y.trim()).sort((p, q) => q.length - p.length)) {
+      const r = new RegExp('^\\s*' + a.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*[-\u2013\u2014:,]\\s*', 'i');
+      if (r.test(x)) { x = x.replace(r, ''); break; }
+    }
+    return words(x).join(' ');
+  };
+  FS.sameBook = function (a, b) {
+    if (!a || !b) return false; if (a === b) return true;
+    const wa = a.split(' '), wb = b.split(' ');
+    if (wa[0] !== wb[0]) return false;
+    const nums = (w) => w.filter((x) => /^\d+$/.test(x)).join(',');
+    if (nums(wa) !== nums(wb)) return false;
+    const [sm, lg] = wa.length <= wb.length ? [wa, wb] : [wb, wa];
+    return sm.length >= 2 && sm.every((x) => lg.includes(x));
+  };
+  FS.sameName = (img, audio) => !!FS.stem(img) && FS.fixColons(FS.stem(img)).toLowerCase() === FS.fixColons(FS.stem(audio)).toLowerCase();
+  const COVER_NAMES = ['embeddedcover', 'cover', 'folder', 'front', 'album', 'albumart', 'albumartsmall'];
+  /** Same as Scanner.pickFolderImage: same-named image, then EmbeddedCover/cover/folder/front..., then (book folder) the only image. */
+  FS.pickImage = function (names, baseName, onlyImageOk) {
+    const imgs = names.filter((n) => /\.(jpe?g|png|webp)$/i.test(n));
+    if (baseName) { const m = imgs.filter((n) => FS.sameName(n, baseName)).sort((p, q) => p.length - q.length || (p < q ? -1 : 1))[0]; if (m) return m; }
+    const sorted = imgs.slice().sort((p, q) => p.toLowerCase() < q.toLowerCase() ? -1 : 1);
+    for (const c of COVER_NAMES) { const m = sorted.find((n) => FS.stem(n).trim().toLowerCase() === c); if (m) return m; }
+    return onlyImageOk && imgs.length === 1 ? imgs[0] : null;
+  };
+  /** .cue sheet -> [{s: startMs, n: title}] (same as CueSheet.kt); fewer than 2 chapters -> []. */
+  FS.parseCue = function (text, durMs) {
+    const tracks = [];
+    for (const raw of String(text).replace(/^\uFEFF/, '').split(/\r?\n|\r/)) {
+      const line = raw.trim(); if (!line) continue;
+      const m = line.match(/^(\S+)\s*(.*)$/); const kw = m[1].toUpperCase(); const rest = m[2].trim();
+      const t = tracks[tracks.length - 1];
+      if (kw === 'TRACK') tracks.push({});
+      else if (kw === 'TITLE' && t) { const v = (rest.length >= 2 && rest[0] === '"' && rest.endsWith('"') ? rest.slice(1, -1) : rest.replace(/^"|"$/g, '')).trim(); t.title = v || undefined; }
+      else if (kw === 'INDEX' && t) {
+        const parts = rest.split(/\s+/); const n = parseInt(parts[0], 10); if (isNaN(n)) continue;
+        const tm = parts.slice(1).join(' ').match(/(\d{1,5}):(\d{1,2})(?::(\d{1,2})|[.,](\d{1,3}))?/); if (!tm) continue;
+        const ms = (Number(tm[1]) * 60 + Number(tm[2])) * 1000 + (tm[3] ? Math.floor(Number(tm[3]) * 1000 / 75) : tm[4] ? Number(tm[4].padEnd(3, '0')) : 0);
+        if (n === 1 && t.i1 == null) t.i1 = ms; else if (n === 0 && t.i0 == null) t.i0 = ms;
+      }
+    }
+    const seen = new Set();
+    const out = tracks.map((t, i) => (t.i1 ?? t.i0) == null ? null : { s: t.i1 ?? t.i0, n: t.title || 'Chapter ' + (i + 1) })
+      .filter((c) => c && (!(durMs > 0) || c.s < durMs)).sort((a, b) => a.s - b.s).filter((c) => !seen.has(c.s) && seen.add(c.s));
+    return out.length >= 2 ? out : [];
+  };
+
   // ---------- picked-folder grouping (browser preview), same rules as Scanner.kt ----------
-  // - audio directly in the picked folder: one book per file
-  // - a folder holding audio directly: one book (plus audio in CD1/CD2-style sub-folders up to 3 levels down)
-  // - a folder whose audio is only several .m4b files: one book per file
-  // - folders without audio of their own are containers, at any depth
+  // - audio = extension (mp3 m4a m4b mp4 aac ogg opus flac wav), any case
+  // - a folder without audio of its own: a container, looked inside at any depth
+  // - audio + disc sub-folders (CD1, Disc 2, Part 3, 01 ...): one book
+  // - audio next to sub-folders that hold books, and the picked folder itself: each loose file is its own book, minus
+  //   files that are the same book as one in a sub-folder (normalized title; the sub-folder copy wins)
+  // - only audio files: one book per file when all are .m4b / "*.m4b.mp4" (the preview can't read chapters or
+  //   lengths up front; the app also splits m4a/mp4 files with chapters or 2 h+), otherwise one book of tracks
   // - hidden entries (".x", "._01.mp3") and system folders are skipped; a .nomedia file does not hide a folder
   // - ids come from the book itself (folder name + its files' names and sizes), not from which folder was picked
   const SYSTEM_DIRS = new Set(['android', 'lost.dir', '$recycle.bin', 'system volume information', 'found.000']);
@@ -642,50 +720,80 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
   FS.skipName = (n) => n.startsWith('.') || SYSTEM_DIRS.has(n.toLowerCase());
   FS.groupFiles = function (entries) {
     const nat = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
-    const dirs = new Map();               // dir path -> { audio: [], images: [] }
+    const dirs = new Map();               // dir path -> { audio: [], images: [], cues: [], subs: Set }
     const decisions = [];                 // [path, decision] for the scan report
+    const notes = [];                     // dedupe and other folder-level decisions
+    const D = (p) => { let d = dirs.get(p); if (!d) { d = { audio: [], images: [], cues: [], subs: new Set() }; dirs.set(p, d); } return d; };
     let rootDir = null;
     for (const en of entries) {
       const parts = en.path.split('/');
       const hid = parts.find(FS.skipName);
       if (hid) { decisions.push([en.path, hid.startsWith('.') ? 'skipped: hidden' : 'skipped: system folder']); continue; }
-      if (!AUDIO_RE.test(parts[parts.length - 1])) decisions.push([en.path, /\.(jpe?g|png|webp)$/i.test(parts[parts.length - 1]) ? 'image: cover candidate' : 'skipped: not audio ext']);
+      const name = parts[parts.length - 1];
+      if (!AUDIO_RE.test(name)) decisions.push([en.path, /\.(jpe?g|png|webp)$/i.test(name) ? 'image: cover candidate' : /\.cue$/i.test(name) ? 'cue: chapter list candidate' : 'skipped: not audio ext']);
       const dir = parts.slice(0, -1).join('/');
       if (rootDir === null) rootDir = parts.length > 1 ? parts[0] : '';
-      const name = parts[parts.length - 1];
-      const d = dirs.get(dir) || { audio: [], images: [] }; dirs.set(dir, d);
+      for (let i = 1; i < parts.length - 1; i++) D(parts.slice(0, i).join('/')).subs.add(parts.slice(0, i + 1).join('/'));
+      const d = D(dir);
       const x = Object.assign({}, en, { name });
-      if (AUDIO_RE.test(name)) d.audio.push(x); else if (/\.(jpe?g|png|webp)$/i.test(name)) d.images.push(x);
+      if (AUDIO_RE.test(name)) d.audio.push(x); else if (/\.(jpe?g|png|webp)$/i.test(name)) d.images.push(x); else if (/\.cue$/i.test(name)) d.cues.push(x);
     }
-    const parentOf = (p) => p.includes('/') ? p.slice(0, p.lastIndexOf('/')) : '';
     const baseOf = (p) => p.slice(p.lastIndexOf('/') + 1);
-    const bookDirs = new Set();
+    const parentOf = (p) => p.includes('/') ? p.slice(0, p.lastIndexOf('/')) : '';
     const out = [];
-    const single = (x, dir) => ({ id: 'w' + hash('file|' + x.name + '|' + (x.size || 0)), title: x.name.replace(AUDIO_RE, ''), folder: false,
-      tracks: [x], images: (dirs.get(dir) || { images: [] }).images, parent: dir ? baseOf(dir) : '' });
-    const sorted = [...dirs.keys()].sort((a, b) => a.split('/').length - b.split('/').length || nat.compare(a, b));
-    for (const dir of sorted) {
-      const d = dirs.get(dir);
-      if (!d.audio.length) continue;
-      if (dir === rootDir || dir === '') { d.audio.forEach((x) => out.push(single(x, dir))); continue; }
-      if (d.audio.length > 1 && d.audio.every((x) => /\.m4b$/i.test(x.name))) { d.audio.forEach((x) => out.push(single(x, dir))); continue; }
-      // part of a book folder above it (CD1, CD2 ...)?
-      let up = parentOf(dir), lv = 1, owner = null;
-      while (up && up !== rootDir && lv <= 4) { if (bookDirs.has(up)) { owner = up; break; } up = parentOf(up); lv++; }
-      // only disc/part folders (CD1, Disc 2, Part 3, 01 ...) between the book folder and this one join that book
-      if (owner && !dir.slice(owner.length + 1).split('/').every(FS.isDiscName)) owner = null;
-      if (owner) { const b = out.find((o) => o.dir === owner); b.tracks.push(...d.audio.map((x) => Object.assign({}, x, { rel: dir.slice(owner.length + 1) + '/' + x.name }))); continue; }
-      bookDirs.add(dir);
-      out.push({ dir, title: baseOf(dir), folder: true, tracks: d.audio.map((x) => Object.assign({}, x, { rel: x.name })), images: d.images, parent: baseOf(parentOf(dir)) });
+    const byName = (a, b) => nat.compare(a.name, b.name);
+    const single = (x, dir) => { const dd = dirs.get(dir) || D(dir); return { id: 'w' + hash('file|' + x.name + '|' + (x.size || 0)), title: FS.displayTitle(x.name), folder: false,
+      tracks: [x], images: dd.images, cues: dd.cues, parent: dir ? baseOf(dir) : '' }; };
+    const singleBooks = (audio) => audio.length > 1 && audio.every((x) => /\.m4b$/i.test(x.name) || /\.m4b/i.test(x.name));
+    function loose(audio, dir, found, authors) {
+      const have = found.map((b) => [b, [b.dirName || '', b.title].map((n) => FS.normKey(n, authors))]);
+      const keys = [];
+      for (const x of audio.slice().sort(byName)) {
+        const k = FS.normKey(x.name, authors);
+        const dup = have.find(([, ks]) => ks.some((y) => FS.sameBook(k, y)));
+        if (dup) { notes.push(`dedupe: loose file '${x.name}' is the same book as '${dup[0].title}' ["${k}"]: kept the sub-folder copy`); x.dupe = dup[0].title; continue; }
+        const twin = keys.find((y) => y[0] === k);
+        if (twin) { notes.push(`dedupe: loose file '${x.name}' is the same book as loose file '${twin[1]}'`); x.dupe = twin[1]; continue; }
+        keys.push([k, x.name]); out.push(single(x, dir));
+      }
     }
+    function folderBook(dir, audio, discs) {
+      const d = D(dir);
+      const tracks = audio.map((x) => Object.assign({}, x, { rel: x.name }));
+      const take = (p) => { const dd = D(p); dd.audio.forEach((x) => tracks.push(Object.assign({}, x, { rel: p.slice(dir.length + 1) + '/' + x.name }))); [...dd.subs].forEach(take); };
+      discs.forEach(take);
+      out.push({ dir, dirName: baseOf(dir), title: FS.displayTitle(baseOf(dir)), folder: true, tracks, images: d.images, cues: d.cues, parent: baseOf(parentOf(dir)) });
+    }
+    function visit(dir, isRoot) {
+      const d = D(dir);
+      const subs = [...d.subs].sort((a, b) => nat.compare(a, b));
+      const audio = d.audio;
+      if (isRoot) { const before = out.length; subs.forEach((x) => visit(x, false)); loose(audio, dir, out.slice(before), [baseOf(dir)]); return; }
+      if (!audio.length) { subs.forEach((x) => visit(x, false)); return; }
+      const discs = subs.filter((x) => FS.isDiscName(baseOf(x)));
+      const others = subs.filter((x) => !discs.includes(x));
+      if (discs.length) { folderBook(dir, audio, discs); others.forEach((x) => visit(x, false)); return; }
+      if (others.length) {
+        const before = out.length; others.forEach((x) => visit(x, false));
+        const found = out.slice(before);
+        if (found.length) { notes.push(`'${baseOf(dir)}': ${found.length} book(s) in its sub-folders, so its ${audio.length} loose audio file(s) are books of their own`); loose(audio, dir, found, [baseOf(dir)]); }
+        else if (singleBooks(audio)) loose(audio, dir, [], [baseOf(dir)]);
+        else folderBook(dir, audio, []);
+        return;
+      }
+      if (singleBooks(audio)) loose(audio, dir, [], [baseOf(dir)]); else folderBook(dir, audio, []);
+    }
+    if (rootDir !== null) visit(rootDir, true);
     for (const b of out) {
       if (!b.folder) continue;
       b.tracks.sort((a, c) => nat.compare(a.rel, c.rel));
-      b.id = 'w' + hash('dir|' + b.title + '|' + b.tracks.map((x) => x.rel + ':' + (x.size || 0)).join('|'));
+      b.id = 'w' + hash('dir|' + b.dirName + '|' + b.tracks.map((x) => x.rel + ':' + (x.size || 0)).join('|'));
     }
     for (const b of out) for (const x of b.tracks) decisions.push([x.path, b.folder ? `audio: track of book '${b.title}'` : 'audio: book (single file)']);
+    for (const d of dirs.values()) for (const x of d.audio) if (x.dupe) decisions.push([x.path, `skipped: same book as '${x.dupe}'`]);
     const res = out.sort((a, b) => nat.compare(a.title, b.title));
     res.decisions = decisions.sort((a, b) => nat.compare(a[0], b[0]));
+    res.notes = notes;
     return res;
   };
   /** Browser-preview version of Settings > Scan report. */
@@ -697,7 +805,8 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
       lines.push('', `== Picked folder: ${f.name}  (${f.books.length} books, ${d.length} files; ${Object.entries(counts).map(([k, v]) => k + '=' + v).join(', ')}, ${f.ms || 0} ms)`);
       d.slice(0, 2000).forEach(([p, w]) => lines.push(`   - ${p} | ${w}`));
       if (d.length > 2000) lines.push(`   … ${d.length - 2000} more`);
-      f.books.forEach((b) => lines.push(`   > book '${b.title}': ${b.tracks.length} track(s), art=${b.art}, id=${b.id}`));
+      (f.notes || []).forEach((x) => lines.push(`   > ${x}`));
+      f.books.forEach((b) => lines.push(`   > book '${b.title}': ${b.tracks.length} track(s), ${(b.ch || []).length} chapters, art=${b.art}, id=${b.id}`));
     }
     return lines.join('\n');
   };
@@ -788,7 +897,7 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
   const FS = window.FS;
   const $ = (s, r) => (r || document).querySelector(s);
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const VERSION = '1.0.3';
+  const VERSION = '1.0.4';
   const TPL_KEY = 'fireside.recapTemplate';
 
   // ---------- icons (inline SVG, currentColor) ----------
