@@ -100,9 +100,9 @@ h2 { font-size: 17px; font-weight: 600; margin: 18px 0 10px; }
 .chips { display: flex; gap: 8px; margin: 14px 0; }
 .chip { height: 40px; padding: 0 16px; border-radius: 20px; border: 1px solid var(--track); color: #C9CAD2; font-size: 14px; }
 .chip.on { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px 12px; }
-.gc { text-align: left; min-width: 0; }
-.gc .cv { width: 100%; aspect-ratio: 3 / 2; border-radius: 12px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 18px 14px; }
+.gc { text-align: left; min-width: 0; border-radius: var(--radius); padding: 0; }
+.gc .cv { width: 100%; aspect-ratio: 1; border-radius: var(--radius); }
 .gc .bar { position: absolute; z-index: 2; left: 8px; right: 8px; bottom: 7px; height: 3px; background: rgba(58, 60, 69, 0.9); }
 .gc .done { position: absolute; z-index: 2; right: 8px; bottom: 8px; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; }
 .gc .done svg { width: 16px; height: 16px; }
@@ -175,8 +175,8 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
 .li .go { flex: 1; text-align: left; min-height: 56px; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
 .li .go b { font-weight: 600; font-size: 15px; font-variant-numeric: tabular-nums; }
 .li .go span { color: var(--muted); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.li .del { width: var(--tap); height: var(--tap); display: grid; place-items: center; color: var(--muted); }
-.li .del svg { width: 20px; height: 20px; }
+.li .del, .li .bmr { width: var(--tap); height: var(--tap); display: grid; place-items: center; color: var(--muted); }
+.li .del svg, .li .bmr svg { width: 20px; height: 20px; }
 .row2 { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 56px; border-bottom: 1px solid var(--line); }
 .row2 .txt { min-width: 0; }
 .row2 .txt b { display: block; font-weight: 500; font-size: 15px; }
@@ -198,19 +198,75 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
 .btns { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
 
 /* toast */
-#toast { position: fixed; left: 50%; bottom: 84px; transform: translateX(-50%); z-index: 30; background: #2A2C34; color: var(--text); border-radius: 14px; padding: 6px 6px 6px 16px; display: flex; align-items: center; gap: 8px; font-size: 14px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5); max-width: calc(100vw - 32px); }
-#toast button { min-height: 40px; padding: 0 14px; color: var(--accent); font-weight: 600; }
+#toast { position: fixed; left: 50%; bottom: 84px; transform: translateX(-50%); z-index: 30; background: #2A2C34; color: var(--text); border-radius: 14px; padding: 6px 6px 6px 16px; display: flex; align-items: center; gap: 8px; font-size: 14px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5); width: max-content; max-width: calc(100vw - 32px); }
+#toast button { min-height: 48px; padding: 0 14px; color: var(--accent); font-weight: 600; }
 #scanbar { position: fixed; left: 16px; right: 16px; top: 10px; z-index: 25; background: #2A2C34; border-radius: 12px; padding: 10px 14px; font-size: 13px; color: var(--text); }
 
 .report { font: 11px/1.45 ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace; white-space: pre-wrap; word-break: break-word; max-height: 52vh; overflow: auto; background: #0E0F13; border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin: 10px 0 0; color: var(--text); }
 .btn[disabled] { opacity: .45; }
+
+/* ===== 1.0.5 home: featured hero + horizontal rows (Netflix TV layout, Fireside palette) ===== */
+:root { --cw: 128px; }
+@media (min-width: 600px) { :root { --cw: 148px; } }
+@media (min-width: 1000px) { :root { --cw: 168px; } }
+.brand { color: var(--accent); font-size: 26px !important; letter-spacing: -0.3px; }
+.homehead { padding-bottom: 10px; }
+.hero { position: relative; border-radius: var(--radius); overflow: hidden; background: var(--card); min-height: 220px; isolation: isolate; }
+.hero .hbg { position: absolute; inset: 0; z-index: -2; overflow: hidden; }
+.hero .hbg img, .hero .hbgt { width: 100%; height: 100%; object-fit: cover; filter: blur(28px) saturate(1.2) brightness(.55); transform: scale(1.35); }
+.hero::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(14,15,19,.92) 0%, rgba(14,15,19,.7) 45%, rgba(14,15,19,.35) 100%), linear-gradient(0deg, rgba(14,15,19,.95) 0%, rgba(14,15,19,0) 55%); }
+.hin { display: flex; gap: 22px; padding: 22px; align-items: flex-end; }
+.hcv { width: 210px; flex: none; aspect-ratio: 1; border-radius: var(--radius); box-shadow: 0 18px 40px rgba(0,0,0,.55); }
+.htx { flex: 1; min-width: 0; }
+.kick { color: var(--accent); font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+.ht { font-size: 32px; font-weight: 700; line-height: 1.1; margin: 6px 0 0; letter-spacing: -0.4px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.hm { color: #C9CAD2; font-size: 14px; margin-top: 8px; display: flex; flex-wrap: wrap; align-items: center; gap: 2px 0; }
+.hm .dot { color: var(--muted); padding: 0 7px; }
+.hd { color: var(--muted); font-size: 14px; line-height: 1.45; margin: 10px 0 0; max-width: 60ch; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
+.hp { display: flex; align-items: center; gap: 12px; margin-top: 12px; max-width: 420px; }
+.hp .bar { flex: 1; }
+.hl { color: var(--accent); font-size: 13px; font-weight: 600; white-space: nowrap; }
+.hc { color: var(--muted); font-size: 13px; margin-top: 4px; }
+.hb { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+.hb .btn svg { width: 20px; height: 20px; }
+.hb .btn.ghost { background: rgba(24,26,32,.6); }
+.hsec h2 { display: flex; align-items: baseline; gap: 8px; margin: 22px 0 10px; font-size: 18px; }
+.hsec h2 span { color: var(--muted); font-size: 13px; font-weight: 500; }
+.hrow { scroll-snap-type: x mandatory; scroll-padding: 0 16px; gap: 14px; padding-bottom: 6px; }
+.pc { width: var(--cw); flex: none; text-align: left; scroll-snap-align: start; border-radius: var(--radius); outline: none; }
+.pc .cv { width: var(--cw); height: auto; aspect-ratio: 1; border-radius: var(--radius); transition: box-shadow .15s, transform .15s; }
+.pc .bar { position: absolute; z-index: 2; left: 10px; right: 10px; bottom: 9px; height: 4px; margin: 0; background: rgba(58,60,69,.9); }
+.pc .num { position: absolute; z-index: 2; left: 8px; top: 8px; min-width: 26px; height: 26px; padding: 0 7px; border-radius: 13px; background: rgba(14,15,19,.82); color: var(--text); font-size: 13px; font-weight: 700; display: grid; place-items: center; }
+.pc .t, .gc .t { font-size: 14px; font-weight: 600; margin-top: 8px; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pc .a, .gc .a { color: var(--muted); font-size: 13px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pc.sel .cv, .pc:focus-visible .cv, .gc:focus-visible .cv { box-shadow: 0 0 0 3px var(--accent); }
+.pc:focus-visible .cv { transform: scale(1.03); }
+.gc .tile, .pc .tile { font-size: 14px; }
+/* recap menu + templates */
+.rc { background: var(--card-2); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; margin-top: 10px; }
+.rc b { font-size: 15px; font-weight: 600; }
+.rc p { color: #C9CAD2; font-size: 14px; line-height: 1.45; margin: 6px 0 0; }
+.rc .btns { margin-top: 10px; }
+.tplrow { margin-top: 14px; }
+.tplrow b { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+textarea.tpl { min-height: 92px; }
+/* Fold cover screen and other narrow screens: hero stacks */
+@media (max-width: 520px) {
+  .hin { flex-direction: column; align-items: flex-start; gap: 14px; padding: 18px 16px 18px; }
+  .hcv { width: 150px; }
+  .ht { font-size: 26px; }
+  .hd { -webkit-line-clamp: 2; }
+  .hb .btn { flex: 1; }
+}
+@media (min-width: 521px) and (max-width: 760px) { .hcv { width: 170px; } .ht { font-size: 28px; } }
+@media (min-width: 1000px) { .hcv { width: 250px; } .hin { padding: 28px; } .ht { font-size: 38px; } }
 </style>
 </head>
 <body>
 <div id="app">
   <!-- Home -->
   <section id="v-home" class="view"><div class="wrap">
-    <div class="head"><h1>Listening</h1><button class="ring" data-act="settings" aria-label="Settings"></button></div>
+    <div class="head homehead"><h1 class="brand">Fireside</h1><button class="ring" data-act="settings" aria-label="Settings"></button></div>
     <div id="home-body"></div>
   </div></section>
 
@@ -342,42 +398,175 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
     return { title: tidy(s) };
   };
 
-  /** Series / book number / title for a book: tags first, then the file or folder name, then the parent folder. */
-  FS.recapFields = function (book, chapter) {
-    const t = book.tags || {};
-    let series = t.series ? tidy(t.series) : '';
-    let number = t.part ? String(t.part).replace(/\/.*/, '').trim() : '';
-    let title = '';
-    if (t.grouping) {
-      const g = FS.parseName(t.grouping);
-      if (g.number) { series = series || g.series || ''; number = number || g.number; }
-      else if (!series && g.title && g.title !== t.album) series = g.title;
+  // ---------- book labels: title / author / series / book # / narrator / year / description ----------
+  // Tags win only when they are clean; otherwise the folder / file names are parsed:
+  //   "Blackflame Cradle, Book 3" -> Cradle #3 "Blackflame"     "Dreadgod: Cradle, Book 11" -> Cradle #11 "Dreadgod"
+  //   "Will Wight - Reaper Cradle, Volume 10" -> by Will Wight, Cradle #10 "Reaper"     "Wind and Truth" -> title only
+  // The author falls back to the parent folder ("Will Wight/Blackflame Cradle, Book 3"), unless it's a generic name.
+  const GENERIC_DIRS = /^(audio ?books?|books?|audio|music|downloads?|media|library|fantasy|sci-?fi|science fiction|fiction|non-?fiction|mystery|thriller|romance|horror|kids|children|series|new|other|misc(ellaneous)?|unsorted|podcasts?|storage|sdcard|primary|internal storage|!.*)$/i;
+  const BAD_TAG = /^(unknown( artist| album)?|various( artists)?|audiobook|audiobooks|untitled|track ?\d*|chapter ?\d*|\d+|null|none|n\/a|-)$/i;
+  const NUM_KW = '(?:book|bk\\.?|vol\\.?|volume|no\\.?|#)';
+  const cleanVal = (v) => { const x = FS.fixColons(String(v == null ? '' : v)).replace(/\s+/g, ' ').trim(); return x.length >= 2 && /\p{L}/u.test(x) && !BAD_TAG.test(x) && !FS.looksLikeTrack(x) && !STRIP_EXT.has((x.match(/\.([a-z0-9]{2,4})$/i) || [])[1]?.toLowerCase()) ? x : ''; };
+  FS.cleanTagValue = cleanVal;
+
+  /** One name ("Blackflame Cradle, Book 3", a file name, a tag) -> { title, series, number, author, how }. */
+  FS.parseBookName = function (raw, opts) {
+    const o = opts || {}; const known = o.knownSeries || [];
+    let x = FS.displayTitle(String(raw || '')).replace(/_/g, ' ');
+    x = x.replace(/\s*[\[(](?:unabridged|abridged|audiobook|audio ?book|mp3|m4b)[\])]\s*/gi, ' ').replace(/\s+/g, ' ').trim();
+    const res = {};
+    for (const a of (o.authors || []).filter(Boolean).sort((p, q) => q.length - p.length)) {
+      const r = new RegExp('^\\s*' + a.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*[-\u2013\u2014:]\\s+', 'i');
+      if (r.test(x)) { res.author = a.trim(); x = x.replace(r, ''); break; }
     }
-    const n = FS.parseName(t.name || book.title);
-    const a = t.album ? FS.parseName(t.album) : {};
-    series = series || a.series || n.series || '';
-    number = number || a.number || n.number || '';
-    title = a.title || n.title || book.title || '';
-    if (!number && series && !book.folder && t.track) number = String(t.track).replace(/\/.*/, '').trim();
-    if (!number && series && t.disc && String(t.disc).replace(/\/.*/, '') !== '1') number = String(t.disc).replace(/\/.*/, '');
-    if (!series && number && t.parent && !NOT_SERIES.test(t.parent)) series = tidy(FS.parseName(t.parent).title || t.parent);
-    if (series && title && series.toLowerCase() === title.toLowerCase()) title = '';
-    if (number) number = String(parseFloat(number));
-    return { series, bookNumber: number === 'NaN' ? '' : number, title, chapter: chapter == null ? '' : String(chapter) };
+    let m;
+    // Title (Series, Book N) / Title [Series #N]
+    if ((m = x.match(new RegExp('^(.+?)\\s*[\\[(]\\s*(.*?\\p{L}.*?)[\\s,]*' + NUM_KW + '?\\s*#?(\\d{1,3}(?:\\.\\d)?)\\s*[\\])]$', 'iu'))) && !NOT_SERIES.test(tidy(m[2])))
+      return Object.assign(res, { title: tidy(m[1]), series: tidy(m[2]), number: m[3], how: 'paren' });
+    // "<title> <series>, Book N" / "<title>: <series>, Book N" / "<title> Book N" / "<series>, Book N"
+    if ((m = x.match(new RegExp('^(.*?\\p{L}.*?)(,?)\\s*' + NUM_KW + '\\s*#?(\\d{1,3}(?:\\.\\d)?)$', 'iu')))) {
+      const pre = tidy(m[1]); const comma = !!m[2]; const n = m[3];
+      const k = known.find((sr) => new RegExp('(^|[\\s:,-])' + sr.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$', 'i').test(pre));
+      if (pre.includes(':')) { const i = pre.lastIndexOf(':'); return Object.assign(res, { title: tidy(pre.slice(0, i)), series: tidy(pre.slice(i + 1)), number: n, how: 'colon' }); }
+      if (k) { const t = tidy(pre.slice(0, pre.length - k.length)); return Object.assign(res, t ? { title: t, series: k, number: n } : { series: k, number: n }, { how: 'known' }); }
+      const w = pre.split(' ');
+      if (comma && w.length >= 2) return Object.assign(res, { title: tidy(w.slice(0, -1).join(' ')), series: w[w.length - 1], number: n, how: 'comma' });
+      if (comma) return Object.assign(res, { series: pre, number: n, how: 'series-only' });
+      if (!NOT_SERIES.test(pre)) return Object.assign(res, { title: pre, number: n, how: 'title-num' });
+    }
+    const p = FS.parseName(x);
+    const how = p.series ? 'series-num' : p.number ? 'num-first' : 'title';
+    return Object.assign(res, p, { how });
   };
 
-  /** Fill {tokens}; a missing value drops its clause ("book {bookNumber}", "({title})", ", chapter {chapter}"). */
+  /** Series names seen in two or more books' names ("<title> Cradle, Book N" twice -> "Cradle"), plus series tags. */
+  FS.knownSeries = function (books) {
+    const count = new Map();
+    for (const b of books || []) {
+      const t = b.tags || {}; const seen = new Set();
+      for (const n of nameCandidates(b)) {
+        const m = FS.displayTitle(n).match(new RegExp('^(.*?\\p{L}.*?),\\s*' + NUM_KW + '\\s*#?\\d{1,3}$', 'iu')); if (!m) continue;
+        const w = tidy(m[1].replace(/^.*:/, '')).split(' ');
+        for (let k = 1; k <= Math.min(3, w.length - 1); k++) seen.add(w.slice(-k).join(' '));
+      }
+      if (cleanVal(t.series)) seen.add(cleanVal(t.series));
+      for (const x of seen) count.set(x.toLowerCase(), [x, ((count.get(x.toLowerCase()) || [x, 0])[1]) + 1]);
+    }
+    return [...count.values()].filter(([x, c]) => c >= 2 || (books || []).some((b) => cleanVal((b.tags || {}).series).toLowerCase() === x.toLowerCase()))
+      .map(([x]) => x).sort((a, b) => b.length - a.length);
+  };
+  function nameCandidates(b) {
+    const t = b.tags || {}; const out = [];
+    if (t.name) out.push(t.name);
+    if ((b.tracks || []).length === 1 && b.tracks[0].name) out.push(b.tracks[0].name);
+    if (b.title) out.push(b.title);
+    return out.filter((x, i) => out.indexOf(x) === i);
+  }
+
+  /** Labels for one book. ctx: { knownSeries, tagCounts } from FS.libraryMeta (optional). */
+  // a grouping / album tag like "Orchard Cycle, Book 2" names the whole series (no title in front of it)
+  const tagSeries = (v, o) => { const p = FS.parseName(FS.fixColons(String(v))); return p.series && p.number && !p.title ? p : FS.parseBookName(v, o); };
+  FS.bookMeta = function (book, ctx) {
+    const c = ctx || {}; const t = book.tags || {};
+    const parent = t.parent && !GENERIC_DIRS.test(t.parent.trim()) ? FS.fixColons(t.parent.trim()) : '';
+    const tagAuthor = cleanVal(t.albumArtist) || cleanVal(t.artist) || cleanVal(book.author);
+    const authors = [tagAuthor, parent].filter(Boolean);
+    const parses = nameCandidates(book).map((n) => FS.parseBookName(n, { authors, knownSeries: c.knownSeries }));
+    const score = (q) => (q.series ? 2 : 0) + (q.number ? 2 : 0) + (q.title ? 1 : 0);
+    const best = parses.reduce((a, q) => (score(q) > score(a) ? q : a), parses[0] || {});
+    let series = cleanVal(t.series), number = t.part ? String(t.part).replace(/\/.*/, '').trim() : '';
+    if (t.grouping) {
+      const g = tagSeries(t.grouping, { knownSeries: c.knownSeries });
+      if (g.number) { series = series || g.series || ''; number = number || g.number; } else if (!series && cleanVal(g.title) && g.title !== t.album) series = g.title;
+    }
+    const alb = t.album ? tagSeries(t.album, { authors, knownSeries: c.knownSeries }) : {};
+    if (alb.number) { series = series || alb.series || ''; number = number || alb.number; }
+    series = series || best.series || '';
+    number = number || best.number || '';
+    if (!number && series && t.series && !book.folder && t.track) number = String(t.track).replace(/\/.*/, '').trim();
+    let usedParentAsSeries = false;
+    if (!series && number && best.how === 'num-first' && parent) { series = tidy(FS.parseName(parent).title || parent); usedParentAsSeries = true; }
+    // title: a clean title tag, then a clean album tag (never the series name, never one shared by several books), then the names
+    const okTitle = (v) => {
+      const x = cleanVal(v); if (!x) return '';
+      const q = FS.parseBookName(x, { authors, knownSeries: c.knownSeries });
+      const tt = q.title || (q.series ? '' : x);
+      if (!tt || (series && tt.toLowerCase() === series.toLowerCase())) return '';
+      if (c.tagCounts && (c.tagCounts[tt.toLowerCase()] || 0) > 1) return '';
+      // 1.0.4 guard: when the folder / file name is a real title, the tag must share a word with it
+      const ref = nameCandidates(book)[0] || '';
+      const refTitle = parses[0] && parses[0].title || '';
+      const sw = new Set(words(series || '')); // "Cradle 9": only the series name, no title words to compare with
+      const fw = new Set(words(refTitle).filter((w) => w.length >= 3 && /\p{L}/u.test(w) && !sw.has(w)));
+      const idLike = /^[\w.-]+$/.test(FS.displayTitle(ref).trim()) && /\d/.test(ref); // B0C9XYZ, 0012345
+      if (fw.size && !idLike && !FS.looksLikeTrack(ref) && !words(x).some((w) => fw.has(w))) return '';
+      return tt;
+    };
+    let title = okTitle(t.title) || (alb.number ? (alb.title || '') : okTitle(t.album)) || best.title || '';
+    if (!title) title = (parses.find((q) => q.title) || {}).title || FS.displayTitle(book.title || '');
+    if (series && title && series.toLowerCase() === title.toLowerCase() && !best.title) title = FS.displayTitle(book.title || '');
+    let author = tagAuthor || best.author || (parses.find((q) => q.author) || {}).author || (!usedParentAsSeries ? parent : '');
+    const narr = cleanVal(t.narrator) || cleanVal(t.writer) || cleanVal(t.composer);
+    const year = (String(t.year || '').match(/\b(1[5-9]|20)\d\d\b/) || [''])[0];
+    const cm = String(t.comment || '').trim();
+    const desc = String(t.desc || '').trim() || (cm.length > 40 ? cm : '');
+    if (number) { number = String(parseFloat(number)); if (number === 'NaN') number = ''; }
+    return { title, author, series, number, narrator: narr && narr !== author ? narr : '', year, desc };
+  };
+
+  /** Labels for every book (series names learnt across the library; a tag title used by several books is not a title). */
+  FS.libraryMeta = function (books) {
+    const knownSeries = FS.knownSeries(books);
+    const tagCounts = {};
+    for (const b of books || []) {
+      const t = b.tags || {}; const seen = new Set();
+      for (const v of [t.title, t.album]) { const x = cleanVal(v).toLowerCase(); if (x) seen.add(x); }
+      for (const x of seen) tagCounts[x] = (tagCounts[x] || 0) + 1;
+    }
+    const out = {};
+    for (const b of books || []) out[b.id] = FS.bookMeta(b, { knownSeries, tagCounts });
+    return out;
+  };
+
+  /** Series / book number / title for the recap prompt (from FS.bookMeta). */
+  FS.recapFields = function (book, chapter, meta) {
+    const m = meta || FS.bookMeta(book);
+    return { series: m.series, bookNumber: m.number, n: m.number, title: m.title, author: m.author || '', chapter: chapter == null ? '' : String(chapter) };
+  };
+
+  /** Fill {tokens}; a missing value drops its clause ("book {bookNumber}", "({title})", ", chapter {chapter}", "by {author}"). */
   FS.fillTemplate = function (tpl, f) {
     const has = (k) => f[k] != null && String(f[k]).trim() !== '';
     let s = String(tpl || FS.DEFAULT_TEMPLATE);
-    s = s.replace(/\s*\(\s*\{(\w+)\}\s*\)/g, (m, k) => has(k) ? m : '');
     s = s.replace(/([,;]?)(\s*)\b(book|chapter|part|volume|vol\.?|no\.?|#)\s*\{(\w+)\}/gi, (m, c, sp, w, k) => has(k) ? m : '');
+    s = s.replace(/\s*\(\s*\{(\w+)\}\s*\)/g, (m, k) => has(k) ? m : '');
+    s = s.replace(/\s*\bby\s+\{(\w+)\}/gi, (m, k) => has(k) ? m : '');
+    s = s.replace(/\s*\/\s*\{(\w+)\}/g, (m, k) => has(k) ? m : '');
     s = s.replace(/#\{(\w+)\}/g, (m, k) => has(k) ? m : '');
     s = s.replace(/\{(\w+)\}/g, (m, k) => has(k) ? String(f[k]).trim() : '');
     s = s.replace(/\(\s*\)/g, '').replace(/[ \t]+/g, ' ').replace(/\s+([,.;:!?)])/g, '$1').replace(/\(\s+/g, '(')
-      .replace(/,\s*,/g, ',').replace(/\b(of|for|about|on)\s+\(([^()]+)\)/gi, '$1 $2').replace(/\b(of|for|about|on)\s*,\s*/gi, '$1 ')
+      .replace(/\b(around|at)\s*\/\s*/gi, '$1 ').replace(/\s*\/\s*(?=[,.;:)]|$)/g, '').replace(/,?\s*\b(around|at)\s*(?=[,.;:)])/gi, '')
+      .replace(/,\s*,/g, ',').replace(/\b(of|for|about|on|in|before|after)\s+\(([^()]+)\)/gi, '$1 $2').replace(/\b(of|for|about|on)\s*,\s*/gi, '$1 ')
       .replace(/(^|\s)[-–—](?=\s*[-–—,.]|\s*$)/g, '').replace(/^(\S+)\s+[-–—]\s+/, '$1 ');
     return s.trim();
+  };
+
+  // ---------- recap prompt menu ----------
+  FS.TEMPLATES = {
+    chapter: FS.DEFAULT_TEMPLATE,
+    bookmark: "Explain what's happening at this point in {series} book {n} ({title}), around chapter {chapter} / {timestamp}, without spoilers past this point.",
+    before: 'Get me up to speed before {title} ({series} book {n}) by {author}: lore, world, characters and important info from earlier books, with no spoilers for this book.',
+    after: 'Give me a full recap of {title} ({series} book {n}) and its impact on the series.',
+  };
+  FS.TEMPLATE_LABELS = { chapter: 'This chapter', bookmark: 'This bookmark', before: 'Before this book', after: 'After this book' };
+  /** kind: chapter | bookmark | before | after. o: { tpl, meta, chapter, timestamp, note } */
+  FS.recapPrompt = function (kind, book, o) {
+    const x = o || {};
+    const f = Object.assign(FS.recapFields(book, kind === 'chapter' || kind === 'bookmark' ? x.chapter : null, x.meta), { timestamp: x.timestamp || '' });
+    let s = FS.fillTemplate(x.tpl || FS.TEMPLATES[kind] || FS.DEFAULT_TEMPLATE, f);
+    const note = String(x.note || '').trim();
+    if (kind === 'bookmark' && note) s += ` My note at this point: "${note}"`;
+    return s;
   };
 
   /** Chapter number for the prompt: M4B chapter ("Chapter 12: ..." -> 12, else its position), or the file number. */
@@ -608,12 +797,12 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
           if (cue && cue.f) { try { ch = FS.parseCue(await cue.f.text(), tracks[0].d); } catch (err) { ch = []; } }
         }
         // Cover: embedded art in the first file, then cover/folder/front image in the folder, then the title tile.
-        let art = null;
-        try { art = await FS.Art.fromFile(audios[0].f); } catch (err) { art = null; }
+        let art = null, tags = {};
+        try { const r = await FS.Art.read(audios[0].f); art = r.img; tags = r.tags || {}; } catch (err) { art = null; }
         const folderImg = img ? img.f : null;
         const url = art ? URL.createObjectURL(art) : folderImg ? URL.createObjectURL(folderImg) : makeCover(name);
-        books.push({ id, title: name, author: '', folder: !single, added: Date.now(), tracks, ch,
-          tags: { name, parent: g.parent || '' }, art: art ? 'embedded' : folderImg ? 'folder' : 'none',
+        books.push({ id, title: name, author: tags.albumArtist || tags.artist || '', folder: !single, added: Date.now(), tracks, ch,
+          tags: Object.assign({}, tags, { name: single ? audios[0].name.replace(/\.[^.]+$/, '') : g.dirName || name, parent: g.parent || '' }), art: art ? 'embedded' : folderImg ? 'folder' : 'none',
           cover: url });
       }
       const nat = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
@@ -858,6 +1047,83 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
       const img = m.subarray(dt[0] + 8, dt[1]);
       return Art.isImage(img) ? img : null;
     },
+    /** Text tags (same keys as Tags.kt) from an ID3v2 tag body. */
+    tagsId3(d, ver) {
+      const out = {}; let p = 0; if (ver < 3) return out;
+      const dec = (f) => {
+        const enc = f[0]; const b = f.subarray(1);
+        const s = enc === 1 ? new TextDecoder('utf-16').decode(b) : enc === 2 ? new TextDecoder('utf-16be').decode(b) : enc === 3 ? new TextDecoder('utf-8').decode(b) : String.fromCharCode(...b);
+        return s.replace(/\uFEFF/g, '').replace(/\u0000+$/, '');
+      };
+      const map = { TIT2: 'title', TALB: 'album', TPE1: 'artist', TPE2: 'albumArtist', TCOM: 'composer', TRCK: 'track', TPOS: 'disc', MVNM: 'series', MVIN: 'part' };
+      while (p + 10 <= d.length && d[p] !== 0) {
+        const id = String.fromCharCode(...d.subarray(p, p + 4));
+        const len = ver === 3 ? Art.u32(d, p + 4) : Art.ss(d, p + 4);
+        p += 10; if (len <= 0 || p + len > d.length) break;
+        const f = d.subarray(p, p + len); p += len;
+        if (map[id]) out[map[id]] = out[map[id]] || dec(f);
+        else if (id === 'TIT1' || id === 'GRP1') out.grouping = out.grouping || dec(f);
+        else if (id === 'TYER' || id === 'TDRC') out.year = out.year || dec(f);
+        else if (id === 'TXXX') {
+          const t = dec(f); const i = t.indexOf('\u0000'); const k = t.slice(0, i).trim().toLowerCase(); const v = t.slice(i + 1).replace(/^\u0000+/, '').trim();
+          if (!v || i < 0) continue;
+          if (['series', 'mvnm', 'show'].includes(k)) out.series = v; else if (['series-part', 'series_part', 'seriespart', 'series part', 'mvin', 'part'].includes(k)) out.part = v;
+          else if (['narrator', 'narrated by', 'reader', 'read by'].includes(k)) out.narrator = v; else if (['description', 'desc', 'summary', 'synopsis'].includes(k)) out.desc = v;
+          else if (k === 'comment') out.comment = out.comment || v; else if (k === 'author' || k === 'writer') out.writer = out.writer || v;
+        } else if (id === 'COMM' && f.length > 4) {
+          const t = dec(new Uint8Array([f[0], ...f.subarray(4)])); const i = t.indexOf('\u0000'); const k = t.slice(0, Math.max(0, i)).toLowerCase(); const v = t.slice(i + 1).replace(/^\u0000+/, '').trim();
+          if (v) { if (/desc|summary/.test(k)) out.desc = v; else out.comment = out.comment || v; }
+        }
+      }
+      return out;
+    },
+    /** Text tags (same keys as Tags.kt) from an MP4 moov box (iTunes ilst atoms). */
+    tagsMoov(m) {
+      const out = {};
+      const u = Art.child(m, 0, m.length, 'udta'); if (!u) return out;
+      const meta = Art.child(m, u[0], u[1], 'meta'); if (!meta) return out;
+      const mf = String.fromCharCode(...m.subarray(meta[0] + 4, meta[0] + 8)) === 'hdlr' ? meta[0] : meta[0] + 4;
+      const il = Art.child(m, mf, meta[1], 'ilst'); if (!il) return out;
+      const map = { '\u00A9nam': 'title', '\u00A9alb': 'album', '\u00A9ART': 'artist', aART: 'albumArtist', '\u00A9grp': 'grouping', '\u00A9wrt': 'writer', '\u00A9nrt': 'narrator', '\u00A9day': 'year', ldes: 'desc', '\u00A9cmt': 'comment', '\u00A9mvn': 'series' };
+      let p = il[0];
+      while (p + 8 <= il[1]) {
+        const size = Art.u32(m, p); if (size < 8 || p + size > il[1]) break;
+        const type = String.fromCharCode(m[p + 4], m[p + 5], m[p + 6], m[p + 7]);
+        const dt = Art.child(m, p + 8, p + size, 'data');
+        if (dt) {
+          const v = m.subarray(dt[0] + 8, dt[1]);
+          if (type === 'trkn' && v.length >= 4) out.track = String((v[2] << 8) | v[3]);
+          else if (type === 'desc' || type === '\u00A9des') out.desc = out.desc || new TextDecoder('utf-8').decode(v);
+          else if (map[type]) out[map[type]] = new TextDecoder('utf-8').decode(v);
+        }
+        p += size;
+      }
+      for (const k of Object.keys(out)) { out[k] = String(out[k]).trim().slice(0, 2000); if (!out[k] || out[k] === '0') delete out[k]; }
+      return out;
+    },
+    /** File/Blob -> { img: Blob|null, tags: {} }. Reads only the tag / moov box, not the audio. */
+    async read(file) {
+      const rd = async (a, b) => new Uint8Array(await file.slice(a, b).arrayBuffer());
+      const h = await rd(0, 12);
+      if (h[0] === 0x49 && h[1] === 0x44 && h[2] === 0x33) {
+        const ver = h[3], size = Art.ss(h, 6); const d = await rd(10, 10 + size);
+        const img = Art.fromId3(d, ver);
+        return { img: img ? new Blob([img], { type: Art.mime(img) }) : null, tags: Art.tagsId3(d, ver) };
+      }
+      if (String.fromCharCode(h[4], h[5], h[6], h[7]) !== 'ftyp') return { img: null, tags: {} };
+      let p = 0;
+      while (p + 8 <= file.size) {
+        const b = await rd(p, p + 16); let size = Art.u32(b, 0), hdr = 8;
+        if (size === 1) { size = Art.u32(b, 8) * 4294967296 + Art.u32(b, 12); hdr = 16; }
+        if (size < hdr) break;
+        if (String.fromCharCode(b[4], b[5], b[6], b[7]) === 'moov') {
+          const m = await rd(p + hdr, p + size); const img = Art.fromMoov(m);
+          return { img: img ? new Blob([img], { type: Art.mime(img) }) : null, tags: Art.tagsMoov(m) };
+        }
+        p += size;
+      }
+      return { img: null, tags: {} };
+    },
     /** File/Blob -> image Blob or null. Reads only the tag / moov box, not the audio. */
     async fromFile(file) {
       const rd = async (a, b) => new Uint8Array(await file.slice(a, b).arrayBuffer());
@@ -897,8 +1163,10 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
   const FS = window.FS;
   const $ = (s, r) => (r || document).querySelector(s);
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const VERSION = '1.0.4';
+  const VERSION = '1.0.5';
   const TPL_KEY = 'fireside.recapTemplate';
+  const tplKey = (k) => k === 'chapter' ? TPL_KEY : TPL_KEY + '.' + k;
+  const tplFor = (k) => localStorage.getItem(tplKey(k)) || FS.TEMPLATES[k];
 
   // ---------- icons (inline SVG, currentColor) ----------
   const sv = (p, vb) => `<svg viewBox="${vb || '0 0 24 24'}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
@@ -928,11 +1196,11 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
   };
 
   // ---------- engine ----------
-  const ui = { lib: { books: [] }, state: {}, tab: 'home', prevTab: 'home', filter: 'all', query: '', seeking: null };
+  const ui = { lib: { books: [] }, meta: {}, state: {}, tab: 'home', prevTab: 'home', filter: 'all', query: '', seeking: null, heroId: null };
   const emit = (type, m) => {
     if (type === 'library') {
       const rootsChanged = JSON.stringify((ui.lib || {}).roots || []) !== JSON.stringify(m.roots || []);
-      ui.lib = m; renderLists(); renderPlayer();
+      ui.lib = m; ui.meta = FS.libraryMeta(m.books || []); renderLists(); renderPlayer();
       if (rootsChanged && ui.sheet === 'settings') openSettings();
       if (ui.sheet === 'report' && (engine.scanReport() || '') !== ui.report) openReport();
     }
@@ -954,6 +1222,9 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
 
   // ---------- helpers ----------
   const books = () => ui.lib.books || [];
+  const M = (b) => ui.meta[b.id] || (ui.meta[b.id] = FS.bookMeta(b));
+  const seriesLine = (m) => m.series ? `${m.series}${m.number ? ' \u00b7 Book ' + m.number : ''}` : '';
+  function lengthOf(ms) { const m = Math.round(ms / 60000); if (!m) return ''; const h = Math.floor(m / 60); return h ? `${h}h ${m % 60}m` : `${m}m`; }
   const byId = (id) => books().find((b) => b.id === id);
   const durs = (b) => (b.tracks || []).map((t) => t.d || 0);
   const total = (b) => FS.BookMath.total(durs(b));
@@ -968,7 +1239,7 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
   }
   const pct = (b) => { const T = total(b); return T > 0 ? Math.min(1, bookPos(b) / T) : 0; };
   const started = (b) => !!(b.spot && b.spot.u) || ui.state.bookId === b.id;
-  const finished = (b) => { const T = total(b); return T > 0 && started(b) && bookPos(b) >= T - 30000; };
+  const finished = (b) => { const T = total(b); return T > 0 && started(b) && bookPos(b) >= T - Math.min(30000, T * 0.05); }; // last 30 s (or last 5% of a very short book)
   function clock(ms) {
     ms = Math.max(0, Math.round(ms / 1000)); const h = Math.floor(ms / 3600), m = Math.floor((ms % 3600) / 60), s = ms % 60;
     return h ? `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}` : `${m}:${String(s).padStart(2, '0')}`;
@@ -981,7 +1252,7 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
   function hue(s) { let h = 0; for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) | 0; return Math.abs(h) % 360; }
   /** Cover box: generated title tile underneath, the real cover (thumbnail in lists, full size on Now Playing) on top. */
   function cover(b, cls, full) {
-    const tile = `<div class="tile" style="background:linear-gradient(160deg,hsl(${hue(b.title)} 45% 34%),hsl(${(hue(b.title) + 40) % 360} 40% 16%))">${esc(b.title)}</div>`;
+    const tile = `<div class="tile" style="background:linear-gradient(160deg,hsl(${hue(b.title)} 45% 34%),hsl(${(hue(b.title) + 40) % 360} 40% 16%))">${esc(M(b).title || b.title)}</div>`;
     const src = full ? b.cover : (b.thumb || b.cover);
     return `<div class="cv ${cls || ''}">${tile}${src ? `<img alt="" src="${esc(src)}" onerror="this.remove()">` : ''}`;
   }
@@ -991,7 +1262,64 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
     return ((b.ch || []).length > 1 ? 'Chapter ' : 'Part ') + (c.index + 1) + ' of ' + c.count;
   };
 
-  // ---------- home ----------
+  // ---------- home (Netflix-style: featured hero + horizontal rows) ----------
+  // Touch: the first tap on a card selects it and the hero shows it; a second tap (or the hero's Play) plays it.
+  // Keyboard / D-pad: focusing a card selects it; Enter plays; arrows move between cards and rows.
+  const nat = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
+  const almostDone = (b) => finished(b) || (started(b) && pct(b) >= 0.95);
+  function homeRows() {
+    const bs = books();
+    const rows = [];
+    const cont = bs.filter((b) => started(b) && !finished(b)).sort((a, b) => (ui.state.bookId === b.id) - (ui.state.bookId === a.id) || ((b.spot || {}).u || 0) - ((a.spot || {}).u || 0));
+    if (cont.length) rows.push({ key: 'continue', title: 'Continue Listening', books: cont, progress: true });
+    const groups = new Map();
+    for (const b of bs) { const m = M(b); if (!m.series) continue; const k = m.series.toLowerCase(); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(b); }
+    const inSeries = new Set();
+    [...groups.values()].filter((g) => g.length >= 2).sort((a, b) => nat.compare(M(a[0]).series, M(b[0]).series)).forEach((g) => {
+      g.sort((a, b) => (parseFloat(M(a).number) || 1e9) - (parseFloat(M(b).number) || 1e9) || nat.compare(M(a).title, M(b).title));
+      g.forEach((b) => inSeries.add(b.id));
+      const authors = [...new Set(g.map((b) => M(b).author).filter(Boolean))];
+      rows.push({ key: 'series:' + M(g[0]).series, title: M(g[0]).series, sub: authors.length === 1 ? authors[0] : '', books: g, numbers: true });
+    });
+    const other = bs.filter((b) => !inSeries.has(b.id)).sort((a, b) => nat.compare(M(a).author || '\uffff', M(b).author || '\uffff') || nat.compare(M(a).title, M(b).title));
+    if (other.length) rows.push({ key: 'other', title: groups.size ? 'Other authors & standalones' : 'Your books', books: other });
+    rows.push({ key: 'recent', title: 'Recently Added', books: bs.slice().sort((a, b) => (b.added || 0) - (a.added || 0)).slice(0, 12) });
+    return rows;
+  }
+  function heroBook() {
+    const id = [ui.heroId, ui.state.bookId, ui.lib.last].find((x) => x && byId(x));
+    if (id) return byId(id);
+    const rows = homeRows(); return rows.length && rows[0].books.length ? rows[0].books[0] : null;
+  }
+  function card(b, row) {
+    const m = M(b); const p = pct(b);
+    const sel = ui.heroId === b.id ? ' sel' : '';
+    const extra = row.progress ? `<div class="bar"><i style="width:${(p * 100).toFixed(1)}%"></i></div>` : '';
+    const badge = row.numbers && m.number ? `<span class="num">${esc(m.number)}</span>` : '';
+    const sub = row.progress ? (total(b) ? left(total(b) - bookPos(b)) : '') : (m.author || seriesLine(m));
+    return `<button class="pc${sel}" data-pick="${b.id}" aria-label="${esc(m.title)}${m.author ? ', ' + esc(m.author) : ''}">${cover(b)}${badge}${extra}</div>
+      <div class="t">${esc(m.title)}</div><div class="a">${esc(sub || '\u00a0')}</div></button>`;
+  }
+  function renderHero() {
+    const el = $('#hero'); if (!el) return;
+    const b = heroBook(); if (!b) { el.innerHTML = ''; return; }
+    ui.heroShown = b.id;
+    const m = M(b); const T = total(b); const st = started(b) && !finished(b);
+    const meta = [m.author, seriesLine(m), lengthOf(T), m.year].filter(Boolean);
+    const playing = ui.state.bookId === b.id && ui.state.playing;
+    const cl = st ? chapterLine(b) : '';
+    el.innerHTML = `<div class="hbg">${b.cover || b.thumb ? `<img alt="" src="${esc(b.cover || b.thumb)}" onerror="this.remove()">` : `<div class="hbgt" style="background:hsl(${hue(b.title)} 40% 22%)"></div>`}</div>
+      <div class="hin">${cover(b, 'hcv', true)}</div>
+        <div class="htx">
+          <div class="kick">${esc(st ? 'Continue listening' : almostDone(b) ? 'Finished' : m.series ? 'From your library' : 'Featured')}</div>
+          <h2 class="ht">${esc(m.title)}</h2>
+          <div class="hm">${meta.map(esc).join('<span class="dot">\u00b7</span>')}</div>
+          ${m.desc ? `<p class="hd">${esc(m.desc)}</p>` : (m.narrator ? `<p class="hd">Narrated by ${esc(m.narrator)}</p>` : '')}
+          ${st ? `<div class="hp"><div class="bar"><i data-live="hbar" style="width:${(pct(b) * 100).toFixed(1)}%"></i></div><span class="hl" data-live="hleft">${T ? left(T - bookPos(b)) : ''}</span></div>${cl ? `<div class="hc">${esc(cl)}</div>` : ''}` : ''}
+          <div class="hb"><button class="btn" data-act="hero-play" data-id="${b.id}">${I.play}${playing ? 'Now Playing' : st ? 'Resume' : almostDone(b) ? 'Listen again' : 'Play'}</button>
+            <button class="btn ghost" data-act="hero-recap" data-id="${b.id}">${I.spark}Recap</button></div>
+        </div></div>`;
+  }
   function renderHome() {
     const el = $('#home-body');
     const bs = books();
@@ -1001,43 +1329,40 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
         ${engine.native ? '' : '<div class="btns" style="justify-content:center"><button class="btn ghost small" data-act="demo">Try demo books</button></div>'}</div>`;
       return;
     }
-    const curId = (ui.state.bookId && byId(ui.state.bookId)) ? ui.state.bookId : (ui.lib.last && byId(ui.lib.last) ? ui.lib.last : null);
-    const cb = curId ? byId(curId) : null;
-    let h = '<h2>Continue Listening</h2>';
-    if (cb) {
-      h += `<div class="cont" data-open="${cb.id}">${cover(cb, 'cv')}</div><div class="info">
-          <div class="t">${esc(cb.title)}</div><div class="a">${esc(cb.author || '')}</div>
-          <div class="c">${esc(chapterLine(cb))}</div><div class="l" data-live="left">${total(cb) ? left(total(cb) - bookPos(cb)) : ''}</div>
-          <div class="row"><div class="bar"><i data-live="bar" style="width:${(pct(cb) * 100).toFixed(1)}%"></i></div>
-          <button class="playbtn" data-act="toggle" aria-label="Play or pause">${ui.state.playing && ui.state.bookId === cb.id ? I.pause : I.play}</button></div></div></div>`;
-    } else h += '<div class="none">Tap a book to start.</div>';
-    const prog = bs.filter((b) => b.id !== curId && started(b) && !finished(b)).sort((a, b) => ((b.spot || {}).u || 0) - ((a.spot || {}).u || 0));
-    h += '<h2>Your Progress</h2>';
-    h += prog.length ? `<div class="hrow">${prog.map((b) => `<button class="pc" data-play="${b.id}">${cover(b)}</div><div class="bar"><i style="width:${(pct(b) * 100).toFixed(1)}%"></i></div><div class="pct">${Math.round(pct(b) * 100)}%</div></button>`).join('')}</div>` : '<div class="none">Books you start show up here.</div>';
-    const rec = bs.slice().sort((a, b) => (b.added || 0) - (a.added || 0)).slice(0, 12);
-    h += `<h2>Recently Added</h2><div class="hrow">${rec.map((b) => `<button class="pc" data-play="${b.id}">${cover(b)}</div><div class="added">Added ${fmtDate(b.added)}</div></button>`).join('')}</div>`;
-    el.innerHTML = h;
+    if (ui.heroId && !byId(ui.heroId)) ui.heroId = null;
+    const rows = homeRows();
+    const keep = {}; document.querySelectorAll('#home-body .hrow').forEach((r) => { keep[r.dataset.row] = r.scrollLeft; });
+    el.innerHTML = `<section class="hero" id="hero"></section>` + rows.map((r) => `<section class="hsec"><h2>${esc(r.title)}${r.sub ? `<span>${esc(r.sub)}</span>` : ''}</h2>
+      <div class="hrow" data-row="${esc(r.key)}">${r.books.map((b) => card(b, r)).join('')}</div></section>`).join('');
+    document.querySelectorAll('#home-body .hrow').forEach((r) => { if (keep[r.dataset.row]) r.scrollLeft = keep[r.dataset.row]; });
+    renderHero();
+  }
+  function selectCard(id) {
+    ui.heroId = id;
+    document.querySelectorAll('#home-body .pc').forEach((c) => c.classList.toggle('sel', c.dataset.pick === id));
+    renderHero();
   }
 
   // ---------- library ----------
   function renderLibrary() {
     const q = ui.query.trim().toLowerCase();
-    let bs = books().filter((b) => !q || (b.title + ' ' + (b.author || '')).toLowerCase().includes(q));
+    let bs = books().filter((b) => { const m = M(b); return !q || [b.title, m.title, m.author, m.series, m.narrator].join(' ').toLowerCase().includes(q); })
+      .sort((a, b) => nat.compare(M(a).author || '\uffff', M(b).author || '\uffff') || nat.compare(M(a).series || '', M(b).series || '') || (parseFloat(M(a).number) || 1e9) - (parseFloat(M(b).number) || 1e9) || nat.compare(M(a).title, M(b).title));
     if (ui.filter === 'progress') bs = bs.filter((b) => started(b) && !finished(b));
     if (ui.filter === 'finished') bs = bs.filter(finished);
     $('#grid').innerHTML = bs.length ? bs.map((b) => {
-      const p = pct(b), f = finished(b);
+      const p = pct(b), f = finished(b); const m = M(b);
       return `<button class="gc" data-play="${b.id}">${cover(b)}${f ? `<span class="done">${I.check}</span>` : (started(b) ? `<div class="bar"><i style="width:${(p * 100).toFixed(1)}%"></i></div>` : '')}</div>
-        <div class="t">${esc(b.title)}</div><div class="a">${b.author ? 'by ' + esc(b.author) : '&nbsp;'}</div></button>`;
+        <div class="t">${esc(m.title)}</div><div class="a">${esc(m.author || seriesLine(m) || '\u00a0')}</div></button>`;
     }).join('') : `<div class="none">${books().length ? 'No books match.' : 'No books yet. Pick your audiobooks folder in Settings (Home, top right).'}</div>`;
     document.querySelectorAll('.chip').forEach((c) => c.classList.toggle('on', c.dataset.f === ui.filter));
   }
   function renderLists() { renderHome(); renderLibrary(); }
   function updateLive() {
     const id = ui.state.bookId; const b = id && byId(id); if (!b) return;
-    const bar = $('[data-live="bar"]'); if (bar) bar.style.width = (pct(b) * 100).toFixed(1) + '%';
-    const l = $('[data-live="left"]'); if (l && total(b)) l.textContent = left(total(b) - bookPos(b));
-    const pb = $('.cont .playbtn'); if (pb) pb.innerHTML = ui.state.playing ? I.pause : I.play;
+    if (ui.heroShown !== b.id) return;
+    const bar = $('[data-live="hbar"]'); if (bar) bar.style.width = (pct(b) * 100).toFixed(1) + '%';
+    const l = $('[data-live="hleft"]'); if (l && total(b)) l.textContent = left(total(b) - bookPos(b));
   }
 
   // ---------- now playing ----------
@@ -1048,8 +1373,9 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
     if (!b) return;
     const key = b.id + '|' + (b.cover || '');
     if ($('#p-cover').dataset.k !== key) { $('#p-cover').outerHTML = cover(b, 'pcover', true).replace('class="cv pcover"', 'class="cv pcover" id="p-cover" data-k="' + esc(key) + '"') + '</div>'; }
-    $('#p-title').textContent = b.title;
-    $('#p-author').textContent = b.author || '';
+    const pm = M(b);
+    $('#p-title').textContent = pm.title || b.title;
+    $('#p-author').textContent = [pm.author, seriesLine(pm)].filter(Boolean).join(' \u00b7 ');
     const [t, p] = where(b); const ci = FS.chapterInfo(b, t, p);
     $('#p-chap').textContent = ci.count > 1 ? ((b.ch || []).length > 1 ? (ci.name || 'Chapter ' + (ci.index + 1)) : (ci.name ? ci.name.replace(/\.[^.]+$/, '') : 'Part ' + (ci.index + 1))) : '';
     const dur = ui.state.dur || ((b.tracks[t] || {}).d) || 0;
@@ -1092,9 +1418,10 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
       <div class="list">${list.length ? list.map((m) => {
         const g = FS.BookMath.toGlobal(durs(b), m.t, m.p); const ci = FS.chapterInfo(b, m.t, m.p);
         return `<div class="li"><button class="go" data-jump="${m.t}:${m.p}"><b>${clock(g)}${ci.count > 1 ? ' · ' + ((b.ch || []).length > 1 ? 'Ch ' : 'Part ') + (ci.index + 1) : ''}</b><span>${esc(m.n || 'No note')}</span></button>
+          <button class="bmr" data-bmrecap="${m.c}" aria-label="Recap prompt for this bookmark">${I.spark}</button>
           <button class="del" data-del="${m.c}" aria-label="Delete bookmark">${I.x}</button></div>`;
       }).join('') : '<div class="none">No bookmarks in this book yet.</div>'}</div>`;
-    if (refresh) { const s = $('.sheet'); if (s && !s.contains(document.activeElement)) s.innerHTML = '<div class="grab"></div>' + html; return; }
+    if (refresh) { const s = $('.sheet'); const typing = s && s.contains(document.activeElement) && /^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName); if (s && !typing) s.innerHTML = '<div class="grab"></div>' + html; return; }
     sheet('bookmarks', html);
   }
   function openSettings() {
@@ -1107,10 +1434,12 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
       <div class="btns"><button class="btn small" data-act="pick">${I.folder} Add folder</button><button class="btn ghost small" data-act="rescan">Rescan</button><button class="btn ghost small" data-act="report">Scan report</button>${engine.native ? '' : '<button class="btn ghost small" data-act="demo">Demo books</button>'}</div>
       <div class="row2" style="margin-top:8px"><div class="txt"><b>Auto-resume</b><span>Play again when Bluetooth or Android Auto reconnects, if Fireside paused itself in the last 30 min.</span></div>
         <button class="sw ${ui.lib.autoResume !== false ? 'on' : ''}" data-act="auto" role="switch" aria-checked="${ui.lib.autoResume !== false}" aria-label="Auto-resume"></button></div>
-      <h3 style="margin-top:18px">Recap prompt</h3>
-      <textarea class="tpl" id="tpl">${esc(tpl)}</textarea>
-      <div class="note">Fields: {series} {bookNumber} {title} {chapter}. A missing field drops its part of the sentence.</div>
-      <div class="btns"><button class="btn small" data-act="tpl-save">Save</button><button class="btn ghost small" data-act="tpl-reset">Reset to default</button></div>
+      <h3 style="margin-top:18px">Recap prompts</h3>
+      <div class="note" style="margin-top:0">Fields: {series} {n} (or {bookNumber}) {title} {author} {chapter} {timestamp}. A missing field drops its part of the sentence. A bookmark's note is added after its prompt.</div>
+      ${['chapter', 'bookmark', 'before', 'after'].map((k) => `<div class="tplrow"><b>${FS.TEMPLATE_LABELS[k]}</b>
+        <textarea class="tpl" id="${k === 'chapter' ? 'tpl' : 'tpl-' + k}" aria-label="${FS.TEMPLATE_LABELS[k]} template">${esc(k === 'chapter' ? tpl : tplFor(k))}</textarea>
+        <div class="btns"><button class="btn ghost small" data-act="tpl-reset" data-k="${k}">Reset to default</button></div></div>`).join('')}
+      <div class="btns"><button class="btn small" data-act="tpl-save">Save prompts</button></div>
       <div class="note" style="margin-top:16px">Fireside v${VERSION}${engine.native ? '' : ' · browser preview'}</div>`);
   }
 
@@ -1123,15 +1452,33 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
       <div class="btns"><button class="btn small" data-act="rep-copy"${text ? '' : ' disabled'}>Copy</button><button class="btn ghost small" data-act="rep-share"${text ? '' : ' disabled'}>Share</button><button class="btn ghost small" data-act="rescan">Rescan</button><button class="btn ghost small" data-act="settings-back">Back</button></div>`);
   }
 
-  // ---------- recap ----------
-  function recapText() {
-    const b = byId(ui.state.bookId); if (!b) return '';
-    const [t, p] = where(b); const ci = FS.chapterInfo(b, t, p);
-    return FS.fillTemplate(localStorage.getItem(TPL_KEY) || FS.DEFAULT_TEMPLATE, FS.recapFields(b, ci.number));
+  // ---------- recap menu ----------
+  // from: 'player' (this chapter / before / after), 'hero' or 'book' (before / this chapter if started / after),
+  // or a bookmark (its own prompt). "After" shows once the book is finished or ~95% through.
+  function openRecap(b, from, bm) {
+    if (!b) return;
+    const m = M(b); const kinds = [];
+    const chapterOf = (t, p) => FS.chapterInfo(b, t, p).number;
+    if (bm) kinds.push('bookmark');
+    else {
+      if (from === 'player' || started(b)) kinds.push('chapter');
+      kinds.push('before');
+      if (almostDone(b)) kinds.push('after');
+      if (from !== 'player') kinds.sort((x, y) => (x === 'before' ? -1 : y === 'before' ? 1 : 0));
+    }
+    const [t, p] = bm ? [bm.t, bm.p] : where(b);
+    const ts = clock(FS.BookMath.toGlobal(durs(b), t, p));
+    ui.recaps = {};
+    for (const k of kinds) ui.recaps[k] = FS.recapPrompt(k, b, { tpl: tplFor(k), meta: m, chapter: chapterOf(t, p), timestamp: ts, note: bm ? bm.n : '' });
+    sheet('recap', `<h3>Recap prompts</h3><div class="note" style="margin-top:-6px;margin-bottom:6px">${esc(m.title)}${m.series ? ' \u00b7 ' + esc(seriesLine(m)) : ''}. Copy one, then paste it into your AI chat app.</div>
+      ${kinds.map((k) => `<div class="rc"><b>${FS.TEMPLATE_LABELS[k]}</b><p>${esc(ui.recaps[k])}</p>
+        <div class="btns"><button class="btn small" data-rcopy="${k}">Copy</button><button class="btn ghost small" data-rshare="${k}">Share</button></div></div>`).join('')}
+      <div class="note">Edit these prompts in Settings.</div>`);
   }
-  function recap() {
-    const s = recapText(); if (!s) return;
+  function copyRecap(k) {
+    const s = (ui.recaps || {})[k]; if (!s) return;
     window.__lastRecap = s;
+    closeSheet();
     engine.copyText(s).then((ok) => toast(ok === false ? 'Couldn\u2019t copy. Use Share.' : 'Recap prompt copied', 'Share', () => engine.shareText(s)));
   }
   let toastT;
@@ -1167,12 +1514,16 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
 
   // ---------- events ----------
   document.addEventListener('click', (ev) => {
-    const el = ev.target.closest('[data-act],[data-play],[data-open],[data-tab],[data-sleep],[data-jump],[data-del],.chip');
+    const el = ev.target.closest('[data-act],[data-play],[data-pick],[data-open],[data-tab],[data-sleep],[data-jump],[data-del],[data-bmrecap],[data-rcopy],[data-rshare],.chip');
     if (!el) return;
     if (el.classList.contains('scrim') && ev.target !== el) return;
     const d = el.dataset;
     if (d.tab) { if (d.tab === 'player') go('player'); else go(d.tab); return; }
     if (d.play) { engine.play(d.play); go('player'); return; }
+    if (d.pick) { if (ui.heroId === d.pick || (ui.kbd && document.activeElement === el && ui.heroId === d.pick)) playBook(d.pick); else selectCard(d.pick); return; }
+    if (d.rcopy) { copyRecap(d.rcopy); return; }
+    if (d.rshare) { const s2 = (ui.recaps || {})[d.rshare]; if (s2) engine.shareText(s2); return; }
+    if (d.bmrecap) { const b = byId(ui.state.bookId); const bm = b && (b.bm || []).find((x) => String(x.c) === d.bmrecap); if (bm) openRecap(b, 'bookmark', bm); return; }
     if (d.open && !ev.target.closest('[data-act]')) { if (ui.state.bookId !== d.open) engine.play(d.open); go('player'); return; }
     if (el.classList.contains('chip')) { ui.filter = d.f; renderLibrary(); return; }
     if (d.sleep) { d.sleep === 'chapter' ? engine.sleep(0, true) : engine.sleep(+d.sleep, false); closeSheet(); toast(d.sleep === 'chapter' ? 'Sleeping at the end of this chapter' : `Sleep timer: ${d.sleep} min`); return; }
@@ -1202,10 +1553,14 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
       case 'sleep-custom': { const m = parseInt($('#sl-custom').value, 10); if (m > 0) { engine.sleep(Math.min(m, 600), false); closeSheet(); toast(`Sleep timer: ${m} min`); } break; }
       case 'bookmarks': renderBookmarks(false); break;
       case 'bm-add': engine.addBookmark($('#bm-note').value); $('#bm-note').value = ''; toast('Bookmark added'); setTimeout(() => renderBookmarks(true), 100); break;
-      case 'recap': recap(); break;
+      case 'recap': openRecap(byId(ui.state.bookId), 'player'); break;
+      case 'hero-play': playBook(d.id); break;
+      case 'hero-recap': openRecap(byId(d.id), 'hero'); break;
       case 'auto': engine.setAutoResume(!(ui.lib.autoResume !== false)); setTimeout(openSettings, 50); break;
-      case 'tpl-save': localStorage.setItem(TPL_KEY, $('#tpl').value.trim() || FS.DEFAULT_TEMPLATE); toast('Recap template saved'); break;
-      case 'tpl-reset': localStorage.removeItem(TPL_KEY); $('#tpl').value = FS.DEFAULT_TEMPLATE; toast('Recap template reset'); break;
+      case 'tpl-save':
+        for (const k of Object.keys(FS.TEMPLATES)) { const ta = $(k === 'chapter' ? '#tpl' : '#tpl-' + k); if (!ta) continue; const v = ta.value.trim(); if (!v || v === FS.TEMPLATES[k]) localStorage.removeItem(tplKey(k)); else localStorage.setItem(tplKey(k), v); }
+        toast('Recap prompts saved'); break;
+      case 'tpl-reset': { const k = d.k || 'chapter'; localStorage.removeItem(tplKey(k)); const ta = $(k === 'chapter' ? '#tpl' : '#tpl-' + k); if (ta) ta.value = FS.TEMPLATES[k]; toast(FS.TEMPLATE_LABELS[k] + ' prompt reset'); break; }
       case 'close-sheet': if (ev.target === el) closeSheet(); break;
     }
   });
@@ -1244,6 +1599,26 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
     engine.useBooks(demo, 'Demo books', true);
     if (toastIt) toast('Demo books loaded');
   }
+
+  function playBook(id) {
+    if (!id || !byId(id)) return;
+    if (ui.state.bookId === id && !ui.state.idle) { if (!ui.state.playing) engine.toggle(); } else engine.play(id);
+    go('player');
+  }
+  // touch selects on click; keyboard / D-pad focus selects right away
+  document.addEventListener('pointerdown', () => { ui.kbd = false; }, true);
+  document.addEventListener('keydown', (e) => {
+    ui.kbd = true;
+    const a = document.activeElement; if (!a || !a.closest || ui.tab !== 'home' || ui.sheet) return;
+    const keys = { ArrowLeft: [0, -1], ArrowRight: [0, 1], ArrowUp: [-1, 0], ArrowDown: [1, 0] }; const mv = keys[e.key]; if (!mv) return;
+    const lines = [[...document.querySelectorAll('#hero .hb .btn')], ...[...document.querySelectorAll('#home-body .hrow')].map((r) => [...r.querySelectorAll('.pc')])].filter((l) => l.length);
+    let li = lines.findIndex((l) => l.includes(a)); if (li < 0) return;
+    let ci = lines[li].indexOf(a);
+    if (mv[0]) { const x = a.getBoundingClientRect().left; li = Math.max(0, Math.min(lines.length - 1, li + mv[0])); ci = lines[li].reduce((bi, el, i) => Math.abs(el.getBoundingClientRect().left - x) < Math.abs(lines[li][bi].getBoundingClientRect().left - x) ? i : bi, 0); }
+    else ci = Math.max(0, Math.min(lines[li].length - 1, ci + mv[1]));
+    const t = lines[li][ci]; if (t && t !== a) { e.preventDefault(); t.focus(); t.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }
+  });
+  document.addEventListener('focusin', (e) => { const c = e.target.closest && e.target.closest('#home-body .pc'); if (c && ui.kbd && ui.heroId !== c.dataset.pick) selectCard(c.dataset.pick); });
 
   // ---------- static icons ----------
   const put = (sel, html) => { const el = $(sel); if (el) el.outerHTML = html; };
