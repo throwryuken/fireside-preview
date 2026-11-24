@@ -201,6 +201,9 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
 #toast { position: fixed; left: 50%; bottom: 84px; transform: translateX(-50%); z-index: 30; background: #2A2C34; color: var(--text); border-radius: 14px; padding: 6px 6px 6px 16px; display: flex; align-items: center; gap: 8px; font-size: 14px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5); max-width: calc(100vw - 32px); }
 #toast button { min-height: 40px; padding: 0 14px; color: var(--accent); font-weight: 600; }
 #scanbar { position: fixed; left: 16px; right: 16px; top: 10px; z-index: 25; background: #2A2C34; border-radius: 12px; padding: 10px 14px; font-size: 13px; color: var(--text); }
+
+.report { font: 11px/1.45 ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace; white-space: pre-wrap; word-break: break-word; max-height: 52vh; overflow: auto; background: #0E0F13; border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin: 10px 0 0; color: var(--text); }
+.btn[disabled] { opacity: .45; }
 </style>
 </head>
 <body>
@@ -443,6 +446,7 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
     e.setAutoResume = (on) => bridge.setAutoResume(!!on);
     e.copyText = (s) => { bridge.copyText(s); return Promise.resolve(true); };
     e.shareText = (s) => bridge.shareText(s);
+    e.scanReport = () => (bridge.scanReport ? bridge.scanReport() : '');
     return e;
   };
 
@@ -564,6 +568,7 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
     e.deleteBookmark = (id, c) => { store.deleteBookmark(id, c); e.reload(); };
     e.setAutoResume = (on) => { store.setAutoResume(on); e.reload(); };
     e.copyText = (s) => (navigator.clipboard ? navigator.clipboard.writeText(s).then(() => true, () => false) : Promise.resolve(false));
+    e.scanReport = () => e.folders && e.folders.length ? FS.scanReportText(opts.version || '', e.folders) : '';
     e.shareText = (s) => { if (navigator.share) navigator.share({ text: s }).catch(() => {}); };
     e.pickFolder = () => opts.pickFiles && opts.pickFiles();
     e.removeFolder = (name) => { e.folders = e.folders.filter((f) => f.name !== name); mergeFolders(); e.reload(); push(); };
@@ -583,6 +588,7 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
     e.loadFiles = async (files, makeCover) => {
       const list = Array.from(files);
       const rootName = list.length && (list[0].webkitRelativePath || '').includes('/') ? list[0].webkitRelativePath.split('/')[0] : '';
+      const t0 = Date.now();
       const groups = FS.groupFiles(list.map((f) => ({ path: f.webkitRelativePath || f.name, size: f.size, f })));
       const books = [];
       for (const g of groups) {
@@ -590,7 +596,7 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
         const single = !g.folder;
         const name = g.title;
         const id = g.id;
-        const img = g.images.find((x) => /^(cover|folder|front)\.(jpe?g|png|webp)$/i.test(x.name)) ||
+        const img = ['embeddedcover', 'cover', 'folder', 'front'].map((n) => g.images.find((x) => x.name.replace(/\.(jpe?g|png|webp)$/i, '').toLowerCase() === n)).find(Boolean) ||
           (single ? g.images.find((x) => x.name.replace(/\.[^.]+$/, '').toLowerCase() === name.toLowerCase()) : (g.images.length === 1 ? g.images[0] : null));
         const tracks = [];
         for (const a of audios) tracks.push({ name: a.name, d: await durationOf(a.f), url: URL.createObjectURL(a.f) });
@@ -607,7 +613,7 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
       books.sort((a, b) => nat.compare(a.title, b.title));
       if (e.demo) { e.folders = []; cur = null; }
       const fname = rootName || 'Picked folder';
-      e.folders = e.folders.filter((f) => f.name !== fname).concat([{ name: fname, books }]);
+      e.folders = e.folders.filter((f) => f.name !== fname).concat([{ name: fname, books, decisions: groups.decisions, ms: Date.now() - t0 }]);
       e.demo = false; mergeFolders();
       e.reload(); push();
     };
@@ -632,14 +638,18 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
   // - hidden entries (".x", "._01.mp3") and system folders are skipped; a .nomedia file does not hide a folder
   // - ids come from the book itself (folder name + its files' names and sizes), not from which folder was picked
   const SYSTEM_DIRS = new Set(['android', 'lost.dir', '$recycle.bin', 'system volume information', 'found.000']);
+  FS.isDiscName = (n) => /^(\d{1,3}|.*\b(cd|disc|disk|part|pt|teil)\s*[-_.#]?\s*\d{1,3}\b.*)$/i.test(n.trim());
   FS.skipName = (n) => n.startsWith('.') || SYSTEM_DIRS.has(n.toLowerCase());
   FS.groupFiles = function (entries) {
     const nat = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
     const dirs = new Map();               // dir path -> { audio: [], images: [] }
+    const decisions = [];                 // [path, decision] for the scan report
     let rootDir = null;
     for (const en of entries) {
       const parts = en.path.split('/');
-      if (parts.some(FS.skipName)) continue;
+      const hid = parts.find(FS.skipName);
+      if (hid) { decisions.push([en.path, hid.startsWith('.') ? 'skipped: hidden' : 'skipped: system folder']); continue; }
+      if (!AUDIO_RE.test(parts[parts.length - 1])) decisions.push([en.path, /\.(jpe?g|png|webp)$/i.test(parts[parts.length - 1]) ? 'image: cover candidate' : 'skipped: not audio ext']);
       const dir = parts.slice(0, -1).join('/');
       if (rootDir === null) rootDir = parts.length > 1 ? parts[0] : '';
       const name = parts[parts.length - 1];
@@ -662,6 +672,8 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
       // part of a book folder above it (CD1, CD2 ...)?
       let up = parentOf(dir), lv = 1, owner = null;
       while (up && up !== rootDir && lv <= 4) { if (bookDirs.has(up)) { owner = up; break; } up = parentOf(up); lv++; }
+      // only disc/part folders (CD1, Disc 2, Part 3, 01 ...) between the book folder and this one join that book
+      if (owner && !dir.slice(owner.length + 1).split('/').every(FS.isDiscName)) owner = null;
       if (owner) { const b = out.find((o) => o.dir === owner); b.tracks.push(...d.audio.map((x) => Object.assign({}, x, { rel: dir.slice(owner.length + 1) + '/' + x.name }))); continue; }
       bookDirs.add(dir);
       out.push({ dir, title: baseOf(dir), folder: true, tracks: d.audio.map((x) => Object.assign({}, x, { rel: x.name })), images: d.images, parent: baseOf(parentOf(dir)) });
@@ -671,7 +683,23 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
       b.tracks.sort((a, c) => nat.compare(a.rel, c.rel));
       b.id = 'w' + hash('dir|' + b.title + '|' + b.tracks.map((x) => x.rel + ':' + (x.size || 0)).join('|'));
     }
-    return out.sort((a, b) => nat.compare(a.title, b.title));
+    for (const b of out) for (const x of b.tracks) decisions.push([x.path, b.folder ? `audio: track of book '${b.title}'` : 'audio: book (single file)']);
+    const res = out.sort((a, b) => nat.compare(a.title, b.title));
+    res.decisions = decisions.sort((a, b) => nat.compare(a[0], b[0]));
+    return res;
+  };
+  /** Browser-preview version of Settings > Scan report. */
+  FS.scanReportText = function (version, folders) {
+    const lines = [`Fireside ${version} scan report · browser preview (${typeof navigator !== 'undefined' ? navigator.userAgent.replace(/\).*/, ')') : 'node'})`];
+    for (const f of folders) {
+      const d = f.decisions || [];
+      const counts = {}; d.forEach(([, w]) => { const k = w.split(':')[0]; counts[k] = (counts[k] || 0) + 1; });
+      lines.push('', `== Picked folder: ${f.name}  (${f.books.length} books, ${d.length} files; ${Object.entries(counts).map(([k, v]) => k + '=' + v).join(', ')}, ${f.ms || 0} ms)`);
+      d.slice(0, 2000).forEach(([p, w]) => lines.push(`   - ${p} | ${w}`));
+      if (d.length > 2000) lines.push(`   … ${d.length - 2000} more`);
+      f.books.forEach((b) => lines.push(`   > book '${b.title}': ${b.tracks.length} track(s), art=${b.art}, id=${b.id}`));
+    }
+    return lines.join('\n');
   };
 
   // ---------- embedded cover art for the browser preview (same rules as Media.kt: ID3 APIC/PIC, MP4 covr) ----------
@@ -760,7 +788,7 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
   const FS = window.FS;
   const $ = (s, r) => (r || document).querySelector(s);
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const VERSION = '1.0.2';
+  const VERSION = '1.0.3';
   const TPL_KEY = 'fireside.recapTemplate';
 
   // ---------- icons (inline SVG, currentColor) ----------
@@ -797,6 +825,7 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
       const rootsChanged = JSON.stringify((ui.lib || {}).roots || []) !== JSON.stringify(m.roots || []);
       ui.lib = m; renderLists(); renderPlayer();
       if (rootsChanged && ui.sheet === 'settings') openSettings();
+      if (ui.sheet === 'report' && (engine.scanReport() || '') !== ui.report) openReport();
     }
     else if (type === 'state') { const changed = m.bookId !== ui.state.bookId; ui.state = m; if (changed) renderLists(); else updateLive(); renderPlayer(); }
     else if (type === 'scan') showScan(m);
@@ -810,7 +839,7 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
     input.type = 'file'; input.multiple = true; input.setAttribute('webkitdirectory', ''); input.className = 'hidden';
     document.body.appendChild(input);
     input.addEventListener('change', () => { if (input.files.length) { showScan({ busy: true, msg: 'Reading files…' }); engine.loadFiles(Array.from(input.files), () => null).then(() => showScan({ busy: false, msg: '' })); } });
-    engine = FS.WebEngine({ storage: localStorage, audio, window, makeAudio: demoAudio, pickFiles: () => input.click(), log: (s) => (window.__fsLog = window.__fsLog || []).push(s) }, emit);
+    engine = FS.WebEngine({ version: VERSION, storage: localStorage, audio, window, makeAudio: demoAudio, pickFiles: () => input.click(), log: (s) => (window.__fsLog = window.__fsLog || []).push(s) }, emit);
   }
   window.fireside = engine;
 
@@ -966,7 +995,7 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
       <div class="row2"><div class="txt"><b>Library folders</b><span>${roots.length ? 'Books from every folder show up together. Removing a folder keeps your saved spots.' : (ui.lib.demo ? 'Demo books' : 'Not picked yet')}</span></div></div>
       ${roots.map((r) => `<div class="row2 root"><span class="fi">${I.folder}</span><div class="txt grow"><b>${esc(r.name)}</b><span class="path">${r.books} book${r.books === 1 ? '' : 's'}</span></div>
         <button class="rootrm${ui.armed === r.uri ? ' arm' : ''}" data-act="root-rm" data-uri="${esc(r.uri)}" aria-label="Remove folder ${esc(r.name)}">${ui.armed === r.uri ? 'Remove?' : I.x}</button></div>`).join('')}
-      <div class="btns"><button class="btn small" data-act="pick">${I.folder} Add folder</button><button class="btn ghost small" data-act="rescan">Rescan</button>${engine.native ? '' : '<button class="btn ghost small" data-act="demo">Demo books</button>'}</div>
+      <div class="btns"><button class="btn small" data-act="pick">${I.folder} Add folder</button><button class="btn ghost small" data-act="rescan">Rescan</button><button class="btn ghost small" data-act="report">Scan report</button>${engine.native ? '' : '<button class="btn ghost small" data-act="demo">Demo books</button>'}</div>
       <div class="row2" style="margin-top:8px"><div class="txt"><b>Auto-resume</b><span>Play again when Bluetooth or Android Auto reconnects, if Fireside paused itself in the last 30 min.</span></div>
         <button class="sw ${ui.lib.autoResume !== false ? 'on' : ''}" data-act="auto" role="switch" aria-checked="${ui.lib.autoResume !== false}" aria-label="Auto-resume"></button></div>
       <h3 style="margin-top:18px">Recap prompt</h3>
@@ -974,6 +1003,15 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
       <div class="note">Fields: {series} {bookNumber} {title} {chapter}. A missing field drops its part of the sentence.</div>
       <div class="btns"><button class="btn small" data-act="tpl-save">Save</button><button class="btn ghost small" data-act="tpl-reset">Reset to default</button></div>
       <div class="note" style="margin-top:16px">Fireside v${VERSION}${engine.native ? '' : ' · browser preview'}</div>`);
+  }
+
+  function openReport() {
+    const text = engine.scanReport() || '';
+    ui.report = text;
+    sheet('report', `<h3>Scan report</h3>
+      <div class="note">What the last scan saw in your folders: every folder, every file and why it was used or skipped. Folder and file names only. Send it with Copy or Share.</div>
+      <pre class="report" id="rep">${text ? esc(text) : 'No scan yet. Add a folder or tap Rescan.'}</pre>
+      <div class="btns"><button class="btn small" data-act="rep-copy"${text ? '' : ' disabled'}>Copy</button><button class="btn ghost small" data-act="rep-share"${text ? '' : ' disabled'}>Share</button><button class="btn ghost small" data-act="rescan">Rescan</button><button class="btn ghost small" data-act="settings-back">Back</button></div>`);
   }
 
   // ---------- recap ----------
@@ -1045,6 +1083,10 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
       case 'settings': openSettings(); break;
       case 'pick': closeSheet(); engine.pickFolder(); break;
       case 'rescan': closeSheet(); engine.rescan(); break;
+      case 'report': openReport(); break;
+      case 'settings-back': openSettings(); break;
+      case 'rep-copy': engine.copyText(ui.report || '').then((ok) => toast(ok === false ? 'Couldn\u2019t copy. Use Share.' : 'Scan report copied', 'Share', () => engine.shareText(ui.report || ''))); break;
+      case 'rep-share': engine.shareText(ui.report || ''); break;
       case 'demo': closeSheet(); loadDemo(true); break;
       case 'sleep': openSleep(); break;
       case 'sleep-off': engine.sleepCancel(); closeSheet(); break;
