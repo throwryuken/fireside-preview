@@ -66,8 +66,6 @@ h2 { font-size: 17px; font-weight: 600; margin: 18px 0 10px; }
 .cont .l { color: var(--accent); font-size: 13px; font-weight: 500; margin-top: 4px; }
 .cont .row { display: flex; align-items: center; gap: 12px; margin-top: auto; }
 .cont .row .bar { flex: 1; }
-.playbtn { width: var(--tap); height: var(--tap); flex: none; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; }
-.playbtn svg { width: 20px; height: 20px; }
 
 /* covers */
 .cv { position: relative; overflow: hidden; background: var(--card-2); border: 1px solid var(--line); }
@@ -149,13 +147,11 @@ h2 { font-size: 17px; font-weight: 600; margin: 18px 0 10px; }
 .cb .c svg { width: 30px; height: 30px; }
 .cb.big .c { width: 68px; height: 68px; background: var(--accent); border: 0; color: #fff; }
 .cb.big .c svg { width: 30px; height: 30px; }
-.cb .lbl { min-height: 14px; }
 .speed { display: flex; align-items: center; justify-content: space-between; width: 170px; height: var(--tap); margin: 12px auto 0; border-radius: 24px; background: var(--card-2); border: 1px solid var(--line); }
 .speed button { width: var(--tap); height: var(--tap); display: grid; place-items: center; }
 .speed button svg { width: 20px; height: 20px; }
 .speed .sv { width: auto; min-width: 72px; height: 40px; padding: 0 10px; border-radius: 20px; font-size: 17px; font-weight: 500; font-variant-numeric: tabular-nums; color: var(--text); }
 .speed .sv.off1 { color: var(--accent); }
-.speedcap { text-align: center; color: var(--muted); font-size: 12px; margin-top: 8px; }
 .extras { display: flex; justify-content: center; gap: 8px; margin-top: 14px; }
 .pill { height: var(--tap); padding: 0 14px; border-radius: 24px; background: var(--card-2); border: 1px solid var(--line); display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: #D5D6DD; }
 .pill svg { width: 18px; height: 18px; }
@@ -226,7 +222,6 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
 
 /* meta line: one separator style everywhere */
 .meta { display: flex; flex-wrap: wrap; align-items: baseline; font-size: 14px; color: #9A9CA8; }
-.sep { margin: 0 6px; color: #9A9CA8; }
 .pauthor.meta { justify-content: flex-start; }
 
 /* featured hero */
@@ -298,6 +293,69 @@ textarea.tpl { min-height: 92px; }
 
 .meta .mi { white-space: nowrap; }
 .search input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+
+/* ===== 1.0.7: Art Director review + new features ===== */
+/* meta separator on the following item (AD #15): a wrapped line never ends on a dot */
+.meta .mi { white-space: nowrap; }
+.meta .mi + .mi::before { content: "\00b7"; margin: 0 6px; color: #9A9CA8; }
+/* hero: description on the inner (wide) screen only; third button = Mark finished */
+@media (max-width: 599px) { #hero .hd { display: none; } }
+.hb .btn.ib { flex: none; width: 48px; min-width: 48px; padding: 0; }
+.hb .btn.ib.on { color: var(--accent); border-color: rgba(245, 165, 36, .5); }
+.hb .btn svg { width: 20px; height: 20px; }
+/* Library: Hide finished switch-chip */
+.chips { flex-wrap: wrap; align-items: center; }
+.tog { min-height: 44px; padding: 0 16px; border-radius: 20px; border: 1px dashed var(--track); color: #C9CAD2; font-size: 14px; margin-left: auto; }
+.tog.on { border-style: solid; border-color: var(--accent); color: var(--accent); }
+/* FS-5: off-screen rows / cards skip layout + paint */
+.hsec { content-visibility: auto; contain-intrinsic-size: auto 220px; }
+.gc { content-visibility: auto; contain-intrinsic-size: auto 230px; }
+/* Now Playing polish */
+.chapnav { margin-top: 6px; }
+.cn { width: 44px; height: 44px; }
+.pchap { color: var(--accent); font-size: 15px; }
+.times { font-size: 14px; font-variant-numeric: tabular-nums; }
+.bookleft { font-size: 15px; color: #F2F2F5; }
+.ctrls { align-items: center; }
+.cb { width: auto; flex: none; }
+.cb .c { width: 56px; height: 56px; }
+@media (max-width: 599px) { #v-player { padding-left: 16px; padding-right: 16px; } }
+.cb .c svg { width: 32px; height: 32px; }
+.cb.big .c { width: 80px; height: 80px; }
+.cb.big .c svg { width: 34px; height: 34px; }
+.extras { gap: 8px; }
+.extras .pill { flex: 1 1 0; min-width: 0; justify-content: center; padding: 0 8px; }
+/* up next card */
+.upnext { display: flex; align-items: center; gap: 12px; margin-top: 12px; padding: 10px; border-radius: 14px; background: var(--card-2); border: 1px solid rgba(245, 165, 36, .35); }
+.upnext .ucv { width: 48px; height: 48px; flex: none; border-radius: 8px; }
+.upnext .ucv .tile { font-size: 8px; padding: 2px; }
+.upnext .utx { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.upnext .uk { color: var(--accent); font-size: 12px; font-weight: 600; }
+.upnext .utx b { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.upnext .btn.small { min-height: 44px; }
+.upnext .btn svg { width: 16px; height: 16px; }
+.upnext .ux { width: 44px; height: 44px; flex: none; display: grid; place-items: center; color: var(--muted); }
+.upnext .ux svg { width: 18px; height: 18px; }
+/* mini-player above the bottom nav */
+#mini { flex: none; display: flex; align-items: center; gap: 12px; height: 64px; padding: 0 8px 0 12px; background: #16171D; border-top: 1px solid #1d1f26; cursor: pointer; }
+#mini .mcv { width: 44px; height: 44px; flex: none; border-radius: 8px; }
+#mini .mcv .tile { font-size: 8px; padding: 2px; }
+#mini .mtx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+#mini .mtx b { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#mini .mtx span { font-size: 13px; color: #9A9CA8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#mini .mpb { width: 48px; height: 48px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: var(--accent-ink); }
+#mini .mpb svg { width: 22px; height: 22px; }
+#mini:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+body.has-mini #toast { bottom: 148px; }
+body.on-player #toast { bottom: calc(12px + env(safe-area-inset-bottom)); }   /* below the Sleep / Bookmarks / Recap pills */
+/* recap cards: Copy is the main action, Share a 44 px icon */
+.ib.share { width: 44px; height: 44px; flex: none; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--track); color: var(--text); }
+.ib.share svg { width: 20px; height: 20px; }
+.rc .btns { align-items: center; }
+/* settings: skip lengths + Fields link */
+.sklbl { font-size: 14px; font-weight: 600; margin: 12px 0 6px; }
+.opts.sk { grid-template-columns: repeat(3, 1fr); }
+.link svg { width: 18px; height: 18px; margin-right: 6px; }
 </style>
 </head>
 <body>
@@ -312,7 +370,7 @@ textarea.tpl { min-height: 92px; }
   <section id="v-library" class="view hidden"><div class="wrap">
     <div class="head appbar"><h1>Library</h1></div>
     <label class="search"><span id="i-search"></span><input id="q" type="search" placeholder="Search your books" autocomplete="off"></label>
-    <div class="chips"><button class="chip on" data-f="all">All</button><button class="chip" data-f="progress">In Progress</button><button class="chip" data-f="finished">Finished</button></div>
+    <div class="chips"><button class="chip on" data-f="all">All</button><button class="chip" data-f="progress">In Progress</button><button class="chip" data-f="finished">Finished</button><button class="tog" id="hide-fin" data-act="hide-fin" role="switch" aria-checked="false">Hide finished</button></div>
     <div class="grid" id="grid"></div>
   </div></section>
 
@@ -328,23 +386,24 @@ textarea.tpl { min-height: 92px; }
       <div class="seek" id="p-seek" aria-label="Seek"><div class="tr"></div><div class="fl" id="p-fill"></div><div class="kn" id="p-knob"></div></div>
       <div class="times"><b id="p-el">0:00</b><span id="p-rem">-0:00</span></div>
       <div class="bookleft" id="p-left"></div>
+      <div class="upnext hidden" id="p-upnext" role="region" aria-label="Up next"></div>
       <div class="ctrls">
-        <button class="cb" data-act="skip" data-ms="-60000" aria-label="Back 1 minute"><span class="c" id="i-b60"></span><span class="lbl">-1m</span></button>
-        <button class="cb" data-act="skip" data-ms="-30000" aria-label="Back 30 seconds"><span class="c" id="i-b30"></span><span class="lbl"></span></button>
+        <button class="cb" data-act="skip" data-ms="-60000" aria-label="Back 1 minute"><span class="c" id="i-b60"></span></button>
+        <button class="cb" data-act="skip" data-ms="-30000" aria-label="Back 30 seconds"><span class="c" id="i-b30"></span></button>
         <button class="cb big" data-act="toggle" aria-label="Play"><span class="c" id="p-play"></span></button>
-        <button class="cb" data-act="skip" data-ms="30000" aria-label="Forward 30 seconds"><span class="c" id="i-f30"></span><span class="lbl"></span></button>
-        <button class="cb" data-act="skip" data-ms="60000" aria-label="Forward 1 minute"><span class="c" id="i-f60"></span><span class="lbl">+1m</span></button>
+        <button class="cb" data-act="skip" data-ms="30000" aria-label="Forward 30 seconds"><span class="c" id="i-f30"></span></button>
+        <button class="cb" data-act="skip" data-ms="60000" aria-label="Forward 1 minute"><span class="c" id="i-f60"></span></button>
       </div>
       <div class="speed"><button data-act="speed" data-dir="-1" aria-label="Slower" id="i-minus"></button><button class="sv" id="p-speed" data-act="speed-reset" aria-label="Playback speed. Tap to reset to 1.00x">1.00x</button><button data-act="speed" data-dir="1" aria-label="Faster" id="i-plus"></button></div>
-      <div class="speedcap">Speed · 5% steps · tap the number for 1.00x</div>
       <div class="extras">
         <button class="pill" id="b-sleep" data-act="sleep"><span id="i-moon"></span>Sleep</button>
-        <button class="pill" data-act="bookmarks"><span id="i-mark"></span>Bookmarks</button>
-        <button class="pill" data-act="recap"><span id="i-spark"></span>Recap</button>
+        <button class="pill" data-act="bm-quick" aria-label="Bookmark this spot (long-press for the list)"><span id="i-mark"></span>Bookmarks</button>
+        <button class="pill" data-act="recap"><span id="i-recap"></span>Recap</button>
       </div>
     </div>
   </div></section>
 
+  <div id="mini" class="hidden" data-act="mini-open" role="button" tabindex="0" aria-label="Open Now Playing"></div>
   <nav id="nav">
     <button data-tab="home" class="on">Home</button>
     <button data-tab="library">Library</button>
@@ -407,6 +466,36 @@ textarea.tpl { min-height: 92px; }
   // ---------- rules (same as Rules.kt) ----------
   FS.smartRewindMs = (paused) => paused < 60e3 ? 0 : paused < 600e3 ? 5e3 : paused < 3600e3 ? 15e3 : 30e3;
   FS.FADE_MS = 10e3;
+  // 1.0.7 skip lengths (seconds): Settings choices, defaults, clamp (same as Skips.kt / PositionStore.kt)
+  FS.SKIP_SMALL = [10, 15, 20, 30, 45, 60];
+  FS.SKIP_LARGE = [60, 120, 180, 300, 600];
+  FS.clampSkip = (sec, def) => { const n = Math.round(Number(sec)); return isFinite(n) && sec !== null && sec !== '' ? Math.max(5, Math.min(1800, n)) : def; };
+  /** Short label for a skip length: 30 -> "30", 60 -> "1m", 90 -> "1m30". */
+  FS.skipLabel = (sec) => sec < 60 ? String(sec) : (sec % 60 ? Math.floor(sec / 60) + 'm' + (sec % 60) : sec / 60 + 'm');
+  /** Spoken label: "Back 30 seconds", "Forward 2 minutes". */
+  FS.skipSpoken = (sec, back) => { const m = Math.floor(sec / 60), r = sec % 60; const p = [];
+    if (m) p.push(m + (m === 1 ? ' minute' : ' minutes')); if (r || !m) p.push(r + (r === 1 ? ' second' : ' seconds'));
+    return (back ? 'Back ' : 'Forward ') + p.join(' '); };
+  /** One time-left wording everywhere (AD #14): under a minute, minutes, or hours + minutes. */
+  FS.timeLeft = (ms) => {
+    ms = Math.max(0, ms || 0);
+    if (ms < 60e3) return 'Under 1m left';
+    const m = Math.floor(ms / 60e3);
+    return m < 60 ? m + 'm left' : Math.floor(m / 60) + 'h ' + (m % 60) + 'm left';
+  };
+  /** Up next (1.0.7): the next book in the same series by number (smallest number above this one), or null. */
+  FS.upNext = (books, meta, id) => {
+    const m = meta[id]; if (!m || !m.series || !m.number) return null;
+    const n = parseFloat(m.number), key = m.series.toLowerCase();
+    let best = null, bn = Infinity;
+    for (const b of books) {
+      const x = meta[b.id]; if (!x || b.id === id || !x.series || x.series.toLowerCase() !== key) continue;
+      const k = parseFloat(x.number); if (k > n && k < bn) { best = b; bn = k; }
+    }
+    return best;
+  };
+  /** Big jumps that get an "undo" toast: chapter, scrub, bookmark, or any seek of at least this much. */
+  FS.UNDO_MIN_MS = 120e3;
   FS.fadeVolume = (rem) => rem >= FS.FADE_MS ? 1 : Math.max(0, Math.min(1, rem / FS.FADE_MS));
 
   // ---------- recap prompt ----------
@@ -445,7 +534,6 @@ textarea.tpl { min-height: 92px; }
   const BAD_TAG = /^(unknown( artist| album)?|various( artists)?|audiobook|audiobooks|untitled|track ?\d*|chapter ?\d*|\d+|null|none|n\/a|-)$/i;
   const NUM_KW = '(?:book|bk\\.?|vol\\.?|volume|no\\.?|#)';
   const cleanVal = (v) => { const x = FS.fixColons(String(v == null ? '' : v)).replace(/\s+/g, ' ').trim(); return x.length >= 2 && /\p{L}/u.test(x) && !BAD_TAG.test(x) && !FS.looksLikeTrack(x) && !STRIP_EXT.has((x.match(/\.([a-z0-9]{2,4})$/i) || [])[1]?.toLowerCase()) ? x : ''; };
-  FS.cleanTagValue = cleanVal;
 
   /** One name ("Blackflame Cradle, Book 3", a file name, a tag) -> { title, series, number, author, how }. */
   FS.parseBookName = function (raw, opts) {
@@ -553,6 +641,9 @@ textarea.tpl { min-height: 92px; }
   };
 
   /** Labels for every book (series names learnt across the library; a tag title used by several books is not a title). */
+  // 1.0.7 (FS-3): labels are cached per book; a book is re-labelled only when its own names/tags or the
+  // library-wide context (known series, shared tag titles) change.
+  const metaCache = new Map(); let metaCtx = '';
   FS.libraryMeta = function (books) {
     const knownSeries = FS.knownSeries(books);
     const tagCounts = {};
@@ -561,8 +652,16 @@ textarea.tpl { min-height: 92px; }
       for (const v of [t.title, t.album]) { const x = cleanVal(v).toLowerCase(); if (x) seen.add(x); }
       for (const x of seen) tagCounts[x] = (tagCounts[x] || 0) + 1;
     }
+    const ctxKey = JSON.stringify([Array.from(knownSeries || []).sort(), Object.keys(tagCounts).filter((k) => tagCounts[k] > 1).sort()]);
+    if (ctxKey !== metaCtx) { metaCache.clear(); metaCtx = ctxKey; }
     const out = {};
-    for (const b of books || []) out[b.id] = FS.bookMeta(b, { knownSeries, tagCounts });
+    for (const b of books || []) {
+      const key = b.id + '\u0000' + (b.title || '') + '\u0000' + (b.author || '') + '\u0000' + (b.folder ? 1 : 0) + '\u0000' + (b.tracks || []).length + '\u0000' + ((b.tracks || [])[0] || {}).name + '\u0000' + JSON.stringify(b.tags || {});
+      let m = metaCache.get(key);
+      if (!m) { m = FS.bookMeta(b, { knownSeries, tagCounts }); metaCache.set(key, m); }
+      out[b.id] = m;
+    }
+    if (metaCache.size > 4 * (books || []).length + 64) metaCache.clear();
     return out;
   };
 
@@ -621,30 +720,57 @@ textarea.tpl { min-height: 92px; }
     return { index: 0, count: 1, name: '', number: '' };
   };
 
-  // ---------- saved spots for the browser preview (same JSON as PositionStore.kt; v2 data reads as-is into v3) ----------
+  // ---------- saved spots for the browser preview (same JSON as PositionStore.kt, format v5 since 1.0.7) ----------
+  // Older data (v1-v4) is read as-is; a copy of it is kept under "<key>.v<N>.bak" the first time 1.0.7 opens it,
+  // and data that can't be parsed is kept under "<key>.unreadable" instead of being thrown away.
   class WebStore {
-    constructor(storage, key) { this.st = storage; this.key = key || 'fireside.positions'; this.load(); }
+    constructor(storage, key) { this.st = storage; this.key = key || 'fireside.positions'; this.timer = null; this.load(); }
     load() {
-      let o = {};
-      try { o = JSON.parse(this.st.getItem(this.key) || '{}'); } catch (e) { o = {}; }
-      this.v = 3; this.from = o.v || (o.books ? 1 : 0); this.books = o.books || {}; this.speed = FS.clampSpeed(o.speed || 1); this.last = o.last || null;
+      let o = {}; const raw = this.st.getItem(this.key);
+      try { o = JSON.parse(raw || '{}') || {}; } catch (e) { o = {}; try { this.st.setItem(this.key + '.unreadable', raw); } catch (x) {} }
+      if (typeof o !== 'object' || Array.isArray(o)) o = {};
+      this.from = o.v || (o.books ? 1 : 0); this.v = 5;
+      if (raw && this.from && this.from < 5) { const bk = this.key + '.v' + this.from + '.bak'; try { if (this.st.getItem(bk) == null) this.st.setItem(bk, raw); } catch (e) {} }
+      this.books = o.books && typeof o.books === 'object' ? o.books : {};
+      this.speed = FS.clampSpeed(Number(o.speed) || 1); this.last = o.last || null;
       this.autoResume = o.autoResume !== false;
+      this.skipS = FS.clampSkip(o.skipS, 30); this.skipL = FS.clampSkip(o.skipL, 60);
+      this.hideFinished = o.hideFinished === true;
     }
-    flush() { this.st.setItem(this.key, JSON.stringify({ v: 3, speed: this.speed, last: this.last || '', autoResume: this.autoResume, books: this.books })); }
+    flush() {
+      clearTimeout(this.timer); this.timer = null;
+      this.st.setItem(this.key, JSON.stringify({ v: 5, speed: this.speed, last: this.last || '', autoResume: this.autoResume,
+        skipS: this.skipS, skipL: this.skipL, hideFinished: this.hideFinished, books: this.books }));
+    }
+    /** Write soon (speed taps come in bursts); pause / pagehide / any other save writes it right away (FS-6). */
+    flushSoon(ms) { if (!this.timer) this.timer = setTimeout(() => this.flush(), ms || 500); }
     get(id) { const b = this.books[id]; return b && b.u ? { t: b.t, p: b.p, u: b.u, s: b.s } : null; }
-    save(id, t, p, now) { const b = this.books[id] || (this.books[id] = {}); b.t = Math.max(0, t | 0); b.p = Math.max(0, Math.round(p)); b.u = now || Date.now(); this.last = id; this.flush(); }
-    speedFor(id) { return (id && this.books[id] && this.books[id].s) || this.speed; }
-    setBookSpeed(id, s) { s = FS.clampSpeed(s); if (id) { const b = this.books[id] || (this.books[id] = {}); b.s = s; } this.speed = s; this.flush(); }
+    save(id, t, p, now) { const b = this.books[id] || (this.books[id] = {}); b.t = Math.max(0, t | 0); b.p = Math.max(0, Math.round(p) || 0); b.u = now || Date.now(); this.last = id; this.flush(); }
+    speedFor(id) { const s = id && this.books[id] && this.books[id].s; return s ? FS.clampSpeed(Number(s) || 1) : this.speed; }
+    setBookSpeed(id, s) { s = FS.clampSpeed(s); if (id) { const b = this.books[id] || (this.books[id] = {}); b.s = s; } this.speed = s; this.flushSoon(); }
     bookmarks(id) { return ((this.books[id] || {}).bm || []).slice().sort((a, b) => a.t - b.t || a.p - b.p); }
     addBookmark(id, t, p, note, now) {
       const b = this.books[id] || (this.books[id] = {}); const l = b.bm || (b.bm = []);
       let c = now || Date.now(); while (l.some((x) => x.c === c)) c++;
       const m = { t, p: Math.round(p), n: String(note || '').trim().slice(0, 500), c }; l.push(m); this.flush(); return m;
     }
+    setBookmarkNote(id, c, note) { const m = ((this.books[id] || {}).bm || []).find((x) => x.c === c); if (!m) return false; m.n = String(note || '').trim().slice(0, 500); this.flush(); return true; }
     deleteBookmark(id, c) { const b = this.books[id]; if (!b || !b.bm) return false; const n = b.bm.length; b.bm = b.bm.filter((x) => x.c !== c); this.flush(); return b.bm.length !== n; }
     setAutoResume(on) { this.autoResume = !!on; this.flush(); }
+    /** true = marked finished, false = marked unfinished, null = follows the position. The spot is never touched. */
+    finished(id) { const f = (this.books[id] || {}).f; return f === true || f === false ? f : null; }
+    setFinished(id, mark) { const b = this.books[id] || (this.books[id] = {}); if (mark === true || mark === false) b.f = mark; else delete b.f; this.flush(); }
+    setSkips(sm, lg) { this.skipS = FS.clampSkip(sm, this.skipS); this.skipL = FS.clampSkip(lg, this.skipL); this.flush(); }
+    setHideFinished(on) { this.hideFinished = !!on; this.flush(); }
   }
   FS.WebStore = WebStore;
+
+  /** Merge a "patch" push (one book's bm / fin / spot, and/or settings) into a library message. */
+  FS.applyPatch = (lib, m) => {
+    if (!lib) return;
+    for (const id of Object.keys(m.books || {})) { const b = (lib.books || []).find((x) => x.id === id); if (b) Object.assign(b, m.books[id]); }
+    if (m.prefs) Object.assign(lib, m.prefs);
+  };
 
   // ---------- engines ----------
   /** Android: everything goes through window.FiresideNative; the service owns playback and saving. */
@@ -655,7 +781,14 @@ textarea.tpl { min-height: 92px; }
       if (m.type === 'library') { e.lib = m; emit('library', m); }
       else if (m.type === 'state') { e.state = m; emit('state', m); }
       else if (m.type === 'scan') emit('scan', m);
+      else if (m.type === 'patch') { FS.applyPatch(e.lib, m); emit('patch', m); }
     };
+    const has = (k) => typeof bridge[k] === 'function';
+    e.playFromStart = (id) => (has('playFromStart') ? bridge.playFromStart(id) : bridge.play(id));
+    e.setFinished = (id, mark) => has('setFinished') && bridge.setFinished(id, mark === true ? 1 : mark === false ? 0 : -1);
+    e.setHideFinished = (on) => has('setHideFinished') && bridge.setHideFinished(!!on);
+    e.setSkips = (sm, lg) => has('setSkips') && bridge.setSkips(sm | 0, lg | 0);
+    e.setBookmarkNote = (id, c, note) => has('setBookmarkNote') && bridge.setBookmarkNote(id, c, note || '');
     e.pickFolder = () => bridge.pickFolder();
     e.removeFolder = (uri) => bridge.removeFolder(uri);
     e.chapter = (dir) => bridge.chapter(dir < 0 ? -1 : 1);
@@ -681,7 +814,7 @@ textarea.tpl { min-height: 92px; }
   FS.WebEngine = function (opts, emit) {
     const store = new WebStore(opts.storage, opts.key);
     const audio = opts.audio;
-    const e = { native: false, store, lib: null, state: {}, books: [], urls: {} };
+    const e = { native: false, store, lib: null, state: {}, books: [] };
     let cur = null, track = 0, pendingSeek = null, pausedAt = 0, lastSave = 0;
     let sleep = { mode: 'off', endsAt: 0, chapterEnd: 0, lastMin: 0 };
 
@@ -694,15 +827,40 @@ textarea.tpl { min-height: 92px; }
       e.root = e.folders.map((f) => f.name).join(', ') || null;
       if (cur && !e.books.some((b) => b.id === cur.id)) { audio.pause(); cur = null; }
     }
+    /** Release the blob: URLs of books that are no longer in the library (FS-11); never the playing book's. */
+    function releaseUrls(old) {
+      const keep = new Set(e.books.map((b) => b.id)); if (cur) keep.add(cur.id);
+      for (const b of old || []) {
+        if (keep.has(b.id)) continue;
+        for (const t of b.tracks || []) if (t.url && String(t.url).startsWith('blob:')) { URL.revokeObjectURL(t.url); t.url = null; }
+        if (b.cover && String(b.cover).startsWith('blob:')) URL.revokeObjectURL(b.cover);
+      }
+    }
     const libMsg = () => ({ type: 'library', root: e.root || null, demo: !!e.demo, roots: e.demo ? [] : e.folders.map((f) => ({ uri: f.name, name: f.name, books: f.books.length })), speed: store.speed, autoResume: store.autoResume, last: store.last,
-      books: e.books.map((b) => Object.assign({}, b, { spot: store.get(b.id), speed: store.speedFor(b.id), bm: store.bookmarks(b.id) })) });
+      skipS: store.skipS, skipL: store.skipL, hideFinished: store.hideFinished,
+      books: e.books.map((b) => Object.assign({}, b, { spot: store.get(b.id), speed: store.speedFor(b.id), bm: store.bookmarks(b.id), fin: store.finished(b.id) })) });
+    const prefs = () => ({ speed: store.speed, autoResume: store.autoResume, last: store.last, skipS: store.skipS, skipL: store.skipL, hideFinished: store.hideFinished });
+    /** Small update instead of the whole library (FS-3), same shape as the Android "patch" push. */
+    function patch(id, what, withPrefs) {
+      const m = { type: 'patch' };
+      if (id) { const x = {}; if (what.bm) x.bm = store.bookmarks(id); if (what.fin) x.fin = store.finished(id); if (what.spot) x.spot = store.get(id); m.books = { [id]: x }; }
+      if (withPrefs) m.prefs = prefs();
+      FS.applyPatch(e.lib, m); emit('patch', m);
+    }
     e.reload = () => { e.lib = libMsg(); emit('library', e.lib); };
     const durs = (b) => b.tracks.map((x) => x.d || 0);
     const find = (id) => e.books.find((b) => b.id === id);
-    const pos = () => Math.round((audio.currentTime || 0) * 1000);
+    // while a new file loads, the place we are going to is pendingSeek, not audio.currentTime (FS-2)
+    const pos = () => pendingSeek != null ? Math.round(pendingSeek * 1000) : Math.round((audio.currentTime || 0) * 1000);
+    /** Go to file t at p ms: load the file, or seek inside the current one (also while it is still loading). */
+    function goTo(t, p) {
+      if (t !== track) setSrc(t, p, !audio.paused);
+      else if (pendingSeek != null) { pendingSeek = p / 1000; push(); }   // no timeupdate while loading: tell the UI now
+      else audio.currentTime = p / 1000;
+    }
 
     function saveNow(why) {
-      if (!cur || pendingSeek) return;
+      if (!cur) return;
       store.save(cur.id, track, pos());
       lastSave = Date.now();
       if (opts.log) opts.log('save[' + why + '] ' + cur.id + ' t=' + track + ' p=' + pos());
@@ -714,6 +872,7 @@ textarea.tpl { min-height: 92px; }
       audio.defaultPlaybackRate = audio.playbackRate = store.speedFor(cur.id);
       audio.load();
       if (play) audio.play().catch(() => {});
+      push();
     }
     audio.addEventListener('loadedmetadata', () => {
       if (cur && isFinite(audio.duration) && !cur.tracks[track].d) cur.tracks[track].d = Math.round(audio.duration * 1000);
@@ -722,7 +881,7 @@ textarea.tpl { min-height: 92px; }
       push();
     });
     audio.addEventListener('timeupdate', () => { if (!audio.paused && Date.now() - lastSave > 3000) saveNow('tick'); push(); });
-    audio.addEventListener('pause', () => { pausedAt = Date.now(); saveNow('pause'); push(); });
+    audio.addEventListener('pause', () => { pausedAt = Date.now(); saveNow('pause'); store.flush(); push(); });
     audio.addEventListener('play', () => {
       if (pausedAt) { const back = FS.smartRewindMs(Date.now() - pausedAt); pausedAt = 0; if (back) seekBy(-back); }
       push();
@@ -730,15 +889,15 @@ textarea.tpl { min-height: 92px; }
     audio.addEventListener('ended', () => { if (cur && track < cur.tracks.length - 1) { saveNow('track'); setSrc(track + 1, 0, true); store.save(cur.id, track, 0); } else push(); });
     audio.addEventListener('ratechange', () => push());   // speed is saved in setSpeed(), not here (load() resets the rate)
     if (opts.window) {
-      opts.window.addEventListener('pagehide', () => saveNow('pagehide'));
-      opts.window.document.addEventListener('visibilitychange', () => { if (opts.window.document.hidden) saveNow('background'); });
+      opts.window.addEventListener('pagehide', () => { saveNow('pagehide'); store.flush(); });
+      opts.window.document.addEventListener('visibilitychange', () => { if (opts.window.document.hidden) { saveNow('background'); store.flush(); } });
     }
 
     function seekBy(delta) {
       if (!cur) return;
       const d = durs(cur); if (audio.duration && isFinite(audio.duration)) d[track] = Math.round(audio.duration * 1000);
       const [t, p] = BM.skip(d, track, pos(), delta);
-      if (t !== track) setSrc(t, p, !audio.paused); else audio.currentTime = p / 1000;
+      goTo(t, p);
     }
 
     function push() {
@@ -759,13 +918,19 @@ textarea.tpl { min-height: 92px; }
       pausedAt = 0;
       store.save(id, t, p);
       setSrc(t, p, true);
-      e.reload();
+      patch(id, { spot: true }, true);   // not the whole library (FS-3)
+    };
+    /** Up next (1.0.7): play a book from its very beginning. */
+    e.playFromStart = (id) => {
+      if (cur && cur.id === id) { goTo(0, 0); audio.play().catch(() => {}); return; }
+      if (!find(id)) return;
+      store.save(id, 0, 0); e.play(id);
     };
     e.toggle = () => { if (!cur) { if (store.last && find(store.last)) e.play(store.last); return; } audio.paused ? audio.play().catch(() => {}) : audio.pause(); };
     e.skip = (ms) => { seekBy(ms); setTimeout(() => saveNow('skip'), 50); };
     e.setSpeed = (s) => { s = FS.clampSpeed(s); if (cur) { audio.defaultPlaybackRate = audio.playbackRate = s; store.setBookSpeed(cur.id, s); } else store.setBookSpeed(null, s); push(); };
-    e.seek = (ms) => { audio.currentTime = ms / 1000; saveNow('seek'); };
-    e.jump = (t, p) => { if (!cur) return; if (t !== track) setSrc(t, p, !audio.paused); else audio.currentTime = p / 1000; setTimeout(() => saveNow('bookmark'), 50); };
+    e.seek = (ms) => { if (pendingSeek != null) { pendingSeek = ms / 1000; push(); } else audio.currentTime = ms / 1000; saveNow('seek'); };
+    e.jump = (t, p) => { if (!cur) return; goTo(Math.max(0, Math.min(t | 0, cur.tracks.length - 1)), Math.max(0, p)); setTimeout(() => saveNow('bookmark'), 50); };
 
     // sleep timer (wall time, fade over the last 10 s; no shake in a browser)
     function sleepInfo() {
@@ -791,21 +956,25 @@ textarea.tpl { min-height: 92px; }
       push();
     };
     e.sleepCancel = () => { stopSleep(); push(); };
-    e.addBookmark = (note) => { if (!cur) return; store.addBookmark(cur.id, track, pos(), note); e.reload(); };
-    e.deleteBookmark = (id, c) => { store.deleteBookmark(id, c); e.reload(); };
-    e.setAutoResume = (on) => { store.setAutoResume(on); e.reload(); };
+    e.addBookmark = (note) => { if (!cur) return; store.addBookmark(cur.id, track, pos(), note); patch(cur.id, { bm: true }); };
+    e.setBookmarkNote = (id, c, note) => { if (store.setBookmarkNote(id, c, note)) patch(id, { bm: true }); };
+    e.deleteBookmark = (id, c) => { store.deleteBookmark(id, c); patch(id, { bm: true }); };
+    e.setAutoResume = (on) => { store.setAutoResume(on); patch(null, {}, true); };
+    e.setFinished = (id, mark) => { store.setFinished(id, mark); patch(id, { fin: true }); };
+    e.setHideFinished = (on) => { store.setHideFinished(on); patch(null, {}, true); };
+    e.setSkips = (sm, lg) => { store.setSkips(sm, lg); patch(null, {}, true); };
     e.copyText = (s) => (navigator.clipboard ? navigator.clipboard.writeText(s).then(() => true, () => false) : Promise.resolve(false));
     e.scanReport = () => e.folders && e.folders.length ? FS.scanReportText(opts.version || '', e.folders) : '';
     e.shareText = (s) => { if (navigator.share) navigator.share({ text: s }).catch(() => {}); };
     e.pickFolder = () => opts.pickFiles && opts.pickFiles();
-    e.removeFolder = (name) => { e.folders = e.folders.filter((f) => f.name !== name); mergeFolders(); e.reload(); push(); };
+    e.removeFolder = (name) => { const old = e.books; e.folders = e.folders.filter((f) => f.name !== name); mergeFolders(); releaseUrls(old); e.reload(); push(); };
     e.chapter = (dir) => {
       if (!cur) return;
       const d = durs(cur); if (audio.duration && isFinite(audio.duration)) d[track] = Math.round(audio.duration * 1000);
       const tgt = BM.chapterTarget(BM.chapterStarts(d, cur.ch), BM.toGlobal(d, track, pos()), dir < 0 ? -1 : 1);
       if (tgt == null) return;
       const [t, p] = BM.fromGlobal(d, tgt);
-      if (t !== track) setSrc(t, p, !audio.paused); else audio.currentTime = p / 1000;
+      goTo(t, p);
       setTimeout(() => saveNow('chapter'), 50);
     };
     e.rescan = () => e.pickFolder();
@@ -845,10 +1014,11 @@ textarea.tpl { min-height: 92px; }
       }
       const nat = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
       books.sort((a, b) => nat.compare(a.title, b.title));
-      if (e.demo) { e.folders = []; cur = null; }
+      const old = e.books;
+      if (e.demo) { e.folders = []; if (cur) audio.pause(); cur = null; }
       const fname = rootName || 'Picked folder';
       e.folders = e.folders.filter((f) => f.name !== fname).concat([{ name: fname, books, decisions: groups.decisions, notes: groups.notes, ms: Date.now() - t0 }]);
-      e.demo = false; mergeFolders();
+      e.demo = false; mergeFolders(); releaseUrls(old);
       e.reload(); push();
     };
     function durationOf(file) {
@@ -859,8 +1029,11 @@ textarea.tpl { min-height: 92px; }
         a.onerror = () => { res(0); URL.revokeObjectURL(u); };
       });
     }
-    e.useBooks = (books, root, demo) => { e.books = books; e.root = root; e.demo = demo; if (demo) e.folders = []; e.reload(); push(); };
-    e.current = () => cur;
+    e.useBooks = (books, root, demo) => {
+      const old = e.books; e.books = books; e.root = root; e.demo = demo; if (demo) e.folders = [];
+      if (cur && !books.some((b) => b.id === cur.id)) { audio.pause(); cur = null; }
+      releaseUrls(old); e.reload(); push();
+    };
     return e;
   };
 
@@ -1188,7 +1361,6 @@ textarea.tpl { min-height: 92px; }
   };
 
   function hash(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(16); }
-  FS.hash = hash;
 
   if (typeof module !== 'undefined' && module.exports) module.exports = FS;
   root.FS = FS;
@@ -1201,7 +1373,7 @@ textarea.tpl { min-height: 92px; }
   const FS = window.FS;
   const $ = (s, r) => (r || document).querySelector(s);
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const VERSION = '1.0.6';
+  const VERSION = '1.0.7';
   const TPL_KEY = 'fireside.recapTemplate';
   const tplKey = (k) => k === 'chapter' ? TPL_KEY : TPL_KEY + '.' + k;
   const tplFor = (k) => localStorage.getItem(tplKey(k)) || FS.TEMPLATES[k];
@@ -1212,10 +1384,8 @@ textarea.tpl { min-height: 92px; }
       ${back ? '<path d="M9.5 8.5A10.5 10.5 0 1 1 6 16"/><path d="M9.8 3.5 9.5 8.5l5 .4"/>' : '<path d="M22.5 8.5A10.5 10.5 0 1 0 26 16"/><path d="M22.2 3.5l.3 5-5 .4"/>'}
       <text x="16" y="20.2" text-anchor="middle" font-size="${label.length > 2 ? 8.5 : 9.5}" font-weight="700" fill="currentColor" stroke="none" font-family="Inter, sans-serif">${label}</text></svg>`;
   const I = {
-    home: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3.2 3 10.4V20a1 1 0 0 0 1 1h5.5v-6h5v6H20a1 1 0 0 0 1-1v-9.6z"/></svg>',
     homeO: sv('<path d="M3 10.5 12 3.5l9 7V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>'),
     lib: sv('<path d="M3 5.5c2.8-1 5.8-.9 9 1.2v13c-3.2-2.1-6.2-2.2-9-1.2z"/><path d="M21 5.5c-2.8-1-5.8-.9-9 1.2v13c3.2-2.1 6.2-2.2 9-1.2z"/>'),
-    libF: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="4" width="4.6" height="16" rx="1"/><rect x="9.7" y="4" width="4.6" height="16" rx="1"/><rect x="16.4" y="4" width="4.6" height="16" rx="1"/><rect x="3" y="7" width="18" height="1.2" fill="#0E0F13"/><rect x="3" y="16.5" width="18" height="1.2" fill="#0E0F13"/></svg>',
     now: sv('<circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l5.5-3.5z" fill="currentColor"/>'),
     gear: sv('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'),
     search: sv('<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>'),
@@ -1227,7 +1397,9 @@ textarea.tpl { min-height: 92px; }
     moon: sv('<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>'),
     mark: sv('<path d="M6 3.5h12v17l-6-4.5-6 4.5z"/>'),
     history: sv('<path d="M3 12a9 9 0 1 0 2.64-6.36L3 8"/><path d="M3 3v5h5"/><path d="M12 7.5V12l3 2"/>'),
-    spark: sv('<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/>'),
+    share: sv('<circle cx="18" cy="5.5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="18.5" r="2.5"/><path d="m8.2 10.8 7.6-4.1M8.2 13.2l7.6 4.1"/>'),
+    done: sv('<circle cx="12" cy="12" r="9"/><path d="m8 12.3 2.8 2.8L16.2 9.6"/>'),
+    info: sv('<circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.6v.1"/>'),
     x: sv('<path d="M6 6l12 12M18 6 6 18"/>'),
     cprev: sv('<path d="M6 5v14"/><path d="M18 6 9.5 12 18 18z" fill="currentColor"/>'),
     cnext: sv('<path d="M18 5v14"/><path d="M6 6l8.5 6L6 18z" fill="currentColor"/>'),
@@ -1235,15 +1407,27 @@ textarea.tpl { min-height: 92px; }
   };
 
   // ---------- engine ----------
-  const ui = { lib: { books: [] }, meta: {}, state: {}, tab: 'home', prevTab: 'home', filter: 'all', query: '', seeking: null, heroId: null };
+  const ui = { lib: { books: [] }, meta: {}, search: {}, state: {}, tab: 'home', prevTab: 'home', filter: 'all', query: '', seeking: null, heroId: null };
   const emit = (type, m) => {
     if (type === 'library') {
       const rootsChanged = JSON.stringify((ui.lib || {}).roots || []) !== JSON.stringify(m.roots || []);
-      ui.lib = m; ui.meta = FS.libraryMeta(m.books || []); renderLists(); renderPlayer();
+      ui.lib = m; ui.meta = FS.libraryMeta(m.books || []); indexSearch(); applySkips(); renderLists(); renderPlayer();
       if (rootsChanged && ui.sheet === 'settings') openSettings();
       if (ui.sheet === 'report' && (engine.scanReport() || '') !== ui.report) openReport();
     }
-    else if (type === 'state') { const changed = m.bookId !== ui.state.bookId; ui.state = m; if (changed) renderLists(); else updateLive(); renderPlayer(); }
+    else if (type === 'state') {
+      const was = ui.state; const changed = m.bookId !== was.bookId || !!m.idle !== !!was.idle; ui.state = m;
+      if (changed) renderLists(); else { updateLive(); if (!!m.playing !== !!was.playing) renderHero(); }
+      renderPlayer(); checkFinish();
+    }
+    else if (type === 'patch') {
+      // one book's bookmarks / finished mark / spot, or settings (FS-3): redraw only what shows them
+      const bs = Object.values(m.books || {}); const pr = m.prefs || {};
+      if ('skipS' in pr || 'skipL' in pr) applySkips();
+      if (bs.some((x) => 'fin' in x || 'spot' in x) || ('hideFinished' in pr && pr.hideFinished !== ui.hideWas)) { ui.hideWas = pr.hideFinished; renderLists(); }
+      renderPlayer();
+      if (ui.sheet === 'settings' && ('skipS' in pr || 'autoResume' in pr)) openSettings(true);
+    }
     else if (type === 'scan') showScan(m);
   };
   let engine;
@@ -1255,19 +1439,17 @@ textarea.tpl { min-height: 92px; }
     input.type = 'file'; input.multiple = true; input.setAttribute('webkitdirectory', ''); input.className = 'hidden';
     document.body.appendChild(input);
     input.addEventListener('change', () => { if (input.files.length) { showScan({ busy: true, msg: 'Reading files…' }); engine.loadFiles(Array.from(input.files), () => null).then(() => showScan({ busy: false, msg: '' })); } });
-    engine = FS.WebEngine({ version: VERSION, storage: localStorage, audio, window, makeAudio: demoAudio, pickFiles: () => input.click(), log: (s) => (window.__fsLog = window.__fsLog || []).push(s) }, emit);
+    engine = FS.WebEngine({ version: VERSION, storage: localStorage, audio, window, makeAudio: demoAudio, pickFiles: () => input.click() }, emit);
   }
   window.fireside = engine;
 
   // ---------- helpers ----------
   const books = () => ui.lib.books || [];
   const M = (b) => ui.meta[b.id] || (ui.meta[b.id] = FS.bookMeta(b));
-  const SEP = '<span class="sep" aria-hidden="true">\u00b7</span>';
-  // each item keeps its separator on its own line end when the meta line wraps (large text)
-  const metaHTML = (parts) => { const xs = parts.filter(Boolean); return xs.map((x, i) => `<span class="mi">${esc(x)}${i < xs.length - 1 ? SEP : ''}</span>`).join(''); };
+  // AD #15: the separator is drawn by CSS (.mi + .mi::before), so a wrapped line never ends on a dangling dot
+  const metaHTML = (parts) => parts.filter(Boolean).map((x) => `<span class="mi">${esc(x)}</span>`).join('');
   const seriesParts = (m) => m.series ? [m.series, m.number ? 'Book ' + m.number : ''] : [];
   const seriesLine = (m) => m.series ? `${m.series}${m.number ? ' \u00b7 Book ' + m.number : ''}` : '';
-  function lengthOf(ms) { const m = Math.round(ms / 60000); if (!m) return ''; const h = Math.floor(m / 60); return h ? `${h}h ${m % 60}m` : `${m}m`; }
   const byId = (id) => books().find((b) => b.id === id);
   const durs = (b) => (b.tracks || []).map((t) => t.d || 0);
   const total = (b) => FS.BookMath.total(durs(b));
@@ -1282,15 +1464,16 @@ textarea.tpl { min-height: 92px; }
   }
   const pct = (b) => { const T = total(b); return T > 0 ? Math.min(1, bookPos(b) / T) : 0; };
   const started = (b) => !!(b.spot && b.spot.u) || ui.state.bookId === b.id;
-  const finished = (b) => { const T = total(b); return T > 0 && started(b) && bookPos(b) >= T - Math.min(30000, T * 0.05); }; // last 30 s (or last 5% of a very short book)
+  const nearEnd = (b) => { const T = total(b); return T > 0 && started(b) && bookPos(b) >= T - Math.min(30000, T * 0.05); }; // last 30 s (or last 5% of a very short book)
+  // 1.0.7: Mark finished / Mark unfinished win over the position; no mark = finished by position
+  const finished = (b) => b.fin === true || (b.fin !== false && nearEnd(b));
+  const hidden = (b) => ui.lib.hideFinished === true && finished(b);
+  const curId = () => ui.state.bookId || null;
   function clock(ms) {
     ms = Math.max(0, Math.round(ms / 1000)); const h = Math.floor(ms / 3600), m = Math.floor((ms % 3600) / 60), s = ms % 60;
     return h ? `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}` : `${m}:${String(s).padStart(2, '0')}`;
   }
-  function left(ms) {
-    const m = Math.round(ms / 60000); if (m < 1) return 'Under 1m left';
-    const h = Math.floor(m / 60); return (h ? `${h}h ${m % 60}m` : `${m}m`) + ' left';
-  }
+  const left = FS.timeLeft;   // AD #14: one time-left wording everywhere
   const fmtDate = (t) => t ? new Date(t).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '';
   function hue(s) { let h = 0; for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) | 0; return Math.abs(h) % 360; }
   /** Cover box: generated title tile underneath, the real cover (thumbnail in lists, full size on Now Playing) on top. */
@@ -1313,10 +1496,12 @@ textarea.tpl { min-height: 92px; }
   function homeRows() {
     const bs = books();
     const rows = [];
-    const cont = bs.filter((b) => started(b) && !finished(b)).sort((a, b) => (ui.state.bookId === b.id) - (ui.state.bookId === a.id) || ((b.spot || {}).u || 0) - ((a.spot || {}).u || 0));
+    // the book in the hero / Now Playing is not repeated here; the row shows once another book is in progress
+    const cont = bs.filter((b) => started(b) && !finished(b) && b.id !== curId()).sort((a, b) => ((b.spot || {}).u || 0) - ((a.spot || {}).u || 0));
     if (cont.length) rows.push({ key: 'continue', title: 'Continue Listening', books: cont, progress: true });
+    const shown = bs.filter((b) => !hidden(b));
     const groups = new Map();
-    for (const b of bs) { const m = M(b); if (!m.series) continue; const k = m.series.toLowerCase(); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(b); }
+    for (const b of shown) { const m = M(b); if (!m.series) continue; const k = m.series.toLowerCase(); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(b); }
     const inSeries = new Set();
     [...groups.values()].filter((g) => g.length >= 2).sort((a, b) => nat.compare(M(a[0]).series, M(b[0]).series)).forEach((g) => {
       g.sort((a, b) => (parseFloat(M(a).number) || 1e9) - (parseFloat(M(b).number) || 1e9) || nat.compare(M(a).title, M(b).title));
@@ -1324,15 +1509,15 @@ textarea.tpl { min-height: 92px; }
       const authors = [...new Set(g.map((b) => M(b).author).filter(Boolean))];
       rows.push({ key: 'series:' + M(g[0]).series, title: M(g[0]).series, sub: authors.length === 1 ? authors[0] : '', books: g, numbers: true });
     });
-    const other = bs.filter((b) => !inSeries.has(b.id)).sort((a, b) => nat.compare(M(a).author || '\uffff', M(b).author || '\uffff') || nat.compare(M(a).title, M(b).title));
-    if (other.length) rows.push({ key: 'other', title: groups.size ? 'Other authors & standalones' : 'Your books', books: other });
-    rows.push({ key: 'recent', title: 'Recently Added', books: bs.slice().sort((a, b) => (b.added || 0) - (a.added || 0)).slice(0, 12) });
-    return rows;
+    const other = shown.filter((b) => !inSeries.has(b.id)).sort((a, b) => nat.compare(M(a).author || '\uffff', M(b).author || '\uffff') || nat.compare(M(a).title, M(b).title));
+    if (other.length) rows.push({ key: 'other', title: inSeries.size ? 'Other authors & standalones' : 'Your books', books: other });
+    rows.push({ key: 'recent', title: 'Recently Added', books: shown.slice().sort((a, b) => (b.added || 0) - (a.added || 0)).slice(0, 12) });
+    return rows.filter((r) => r.key === 'continue' || r.books.length >= 2);   // AD: no row with fewer than 2 books
   }
   function heroBook() {
     const id = [ui.heroId, ui.state.bookId, ui.lib.last].find((x) => x && byId(x));
     if (id) return byId(id);
-    const rows = homeRows(); return rows.length && rows[0].books.length ? rows[0].books[0] : null;
+    const rows = homeRows(); return rows.length && rows[0].books.length ? rows[0].books[0] : books()[0] || null;
   }
   function card(b, row) {
     const m = M(b); const p = pct(b);
@@ -1348,19 +1533,23 @@ textarea.tpl { min-height: 92px; }
     const b = heroBook(); if (!b) { el.innerHTML = ''; return; }
     ui.heroShown = b.id;
     const m = M(b); const T = total(b); const st = started(b) && !finished(b);
-    const meta = [m.author, ...seriesParts(m), lengthOf(T), m.year].filter(Boolean);
-    const playing = ui.state.bookId === b.id && ui.state.playing;
+    const meta = [m.author, ...seriesParts(m)].filter(Boolean);   // AD: no year / length on the hero line
+    const playing = ui.state.bookId === b.id && !ui.state.idle && ui.state.playing;
+    const fin = finished(b);
+    // AD #13: never "Playing". Playing -> pause bars + Pause; paused -> triangle + Resume (Play when nothing played yet or finished)
+    const label = playing ? 'Pause' : (!fin && started(b) && bookPos(b) > 0) ? 'Resume' : 'Play';
     const cl = st ? chapterLine(b) : '';
     el.innerHTML = `<div class="hbg"><div class="hbgt" style="background:linear-gradient(160deg,hsl(${hue(b.title)} 45% 34%),hsl(${(hue(b.title) + 40) % 360} 40% 16%))"></div>${b.cover || b.thumb ? `<img alt="" src="${esc(b.cover || b.thumb)}" onerror="this.remove()">` : ''}</div>
       <div class="hin">${cover(b, 'hcv', true)}</div>
         <div class="htx">
-          <div class="kick">${esc(st ? 'Continue listening' : almostDone(b) ? 'Finished' : m.series ? 'From your library' : 'Featured')}</div>
+          <div class="kick">${esc(st ? 'Continue listening' : fin ? 'Finished' : m.series ? 'From your library' : 'Featured')}</div>
           <h2 class="ht">${esc(m.title)}</h2>
           <div class="hm meta">${metaHTML(meta)}</div>
           ${m.desc ? `<p class="hd">${esc(m.desc)}</p>` : (m.narrator ? `<p class="hd">Narrated by ${esc(m.narrator)}</p>` : '')}
           ${st ? `<div class="hp"><div class="bar"><i data-live="hbar" style="width:${(pct(b) * 100).toFixed(1)}%"></i></div><span class="hl" data-live="hleft">${T ? left(T - bookPos(b)) : ''}</span></div>${cl ? `<div class="hc">${esc(cl)}</div>` : ''}` : ''}
-          <div class="hb"><button class="btn" data-act="hero-play" data-id="${b.id}">${playing ? I.now : I.play}${playing ? 'Playing' : st ? 'Resume' : almostDone(b) ? 'Listen again' : 'Play'}</button>
-            <button class="btn ghost" data-act="hero-recap" data-id="${b.id}">${I.history}Recap</button></div>
+          <div class="hb"><button class="btn" data-act="hero-play" data-id="${b.id}">${playing ? I.pause : I.play}${label}</button>
+            <button class="btn ghost" data-act="hero-recap" data-id="${b.id}">${I.history}Recap</button>
+            <button class="btn ghost ib${fin ? ' on' : ''}" data-act="fin-toggle" data-id="${b.id}" aria-label="${fin ? 'Mark unfinished' : 'Mark finished'}" title="${fin ? 'Mark unfinished' : 'Mark finished'}" aria-pressed="${fin}">${fin ? I.done : I.check}</button></div>
         </div></div>`;
   }
   function renderHome() {
@@ -1389,7 +1578,7 @@ textarea.tpl { min-height: 92px; }
   // ---------- library ----------
   function renderLibrary() {
     const q = ui.query.trim().toLowerCase();
-    let bs = books().filter((b) => { const m = M(b); return !q || [b.title, m.title, m.author, m.series, m.narrator].join(' ').toLowerCase().includes(q); })
+    let bs = books().filter((b) => (!q || (ui.search[b.id] || '').includes(q)) && (ui.filter === 'finished' || !hidden(b)))
       .sort((a, b) => nat.compare(M(a).author || '\uffff', M(b).author || '\uffff') || nat.compare(M(a).series || '', M(b).series || '') || (parseFloat(M(a).number) || 1e9) - (parseFloat(M(b).number) || 1e9) || nat.compare(M(a).title, M(b).title));
     if (ui.filter === 'progress') bs = bs.filter((b) => started(b) && !finished(b));
     if (ui.filter === 'finished') bs = bs.filter(finished);
@@ -1401,6 +1590,12 @@ textarea.tpl { min-height: 92px; }
       ? `<div class="empty gempty"><span class="eico">${I.search}</span><b>No books match${q ? ` \u201c${esc(ui.query.trim())}\u201d` : ''}</b><p>${q ? 'Try a title, author, series or narrator.' : (ui.filter === 'finished' ? 'Books you finish show up here.' : 'Books you have started show up here.')}</p>${q ? '<button class="btn ghost" data-act="clear-q">Clear search</button>' : ''}</div>`
       : `<div class="empty gempty"><span class="eico">${I.folder}</span><b>No books yet</b><p>Pick the folder that holds your audiobooks. Each file, or each folder of files, becomes one book.</p><button class="btn" data-act="pick">${I.folder} Pick folder</button></div>`);
     document.querySelectorAll('.chip').forEach((c) => c.classList.toggle('on', c.dataset.f === ui.filter));
+    const hf = $('#hide-fin'); if (hf) { const on = ui.lib.hideFinished === true; hf.classList.toggle('on', on); hf.setAttribute('aria-checked', String(on)); }
+  }
+  /** Lower-case search text per book, built once per library (FS-5). */
+  function indexSearch() {
+    ui.search = {};
+    for (const b of books()) { const m = M(b); ui.search[b.id] = [b.title, m.title, m.author, m.series, m.narrator].join(' ').toLowerCase(); }
   }
   function renderLists() { renderHome(); renderLibrary(); }
   function updateLive() {
@@ -1411,35 +1606,95 @@ textarea.tpl { min-height: 92px; }
   }
 
   // ---------- now playing ----------
+  // FS-1: Now Playing is updated every 500 ms; only what changed is written, so buttons under the finger are
+  // never replaced (taps were lost) and focus stays put.
+  const setT = (el, v) => { if (el && el.textContent !== v) el.textContent = v; };
+  const setH = (el, v) => { if (el && el.dataset.h !== v) { el.innerHTML = v; el.dataset.h = v; } };
+  const setA = (el, k, v) => { if (el && el.getAttribute(k) !== v) el.setAttribute(k, v); };
+  const setW = (el, prop, v) => { if (el && el.style[prop] !== v) el.style[prop] = v; };
+  const bmKey = (b) => (b.bm || []).map((m) => m.c + ':' + m.t + ':' + m.p + ':' + (m.n || '')).join('|');
   function renderPlayer() {
+    renderMini();
     const b = ui.state.bookId && byId(ui.state.bookId);
-    $('#p-empty').classList.toggle('hidden', !!b);
-    $('#p-main').classList.toggle('hidden', !b);
+    const pe = $('#p-empty'), pm0 = $('#p-main');
+    if (pe.classList.contains('hidden') !== !!b) pe.classList.toggle('hidden', !!b);
+    if (pm0.classList.contains('hidden') !== !b) pm0.classList.toggle('hidden', !b);
     if (!b) return;
     const key = b.id + '|' + (b.cover || '');
     if ($('#p-cover').dataset.k !== key) { $('#p-cover').outerHTML = cover(b, 'pcover', true).replace('class="cv pcover"', 'class="cv pcover" id="p-cover" data-k="' + esc(key) + '"') + '</div>'; }
     const pm = M(b);
-    $('#p-title').textContent = pm.title || b.title;
-    $('#p-author').innerHTML = metaHTML([pm.author, ...seriesParts(pm)]);
+    setT($('#p-title'), pm.title || b.title);
+    setH($('#p-author'), metaHTML([pm.author, ...seriesParts(pm)]));
     const [t, p] = where(b); const ci = FS.chapterInfo(b, t, p);
-    $('#p-chap').textContent = ci.count > 1 ? ((b.ch || []).length > 1 ? (ci.name || 'Chapter ' + (ci.index + 1)) : (ci.name ? ci.name.replace(/\.[^.]+$/, '') : 'Part ' + (ci.index + 1))) : '';
+    setT($('#p-chap'), ci.count > 1 ? ((b.ch || []).length > 1 ? (ci.name || 'Chapter ' + (ci.index + 1)) : (ci.name ? ci.name.replace(/\.[^.]+$/, '') : 'Part ' + (ci.index + 1))) : '');
     const dur = ui.state.dur || ((b.tracks[t] || {}).d) || 0;
     const pos = ui.seeking != null ? ui.seeking : p;
     const f = dur ? Math.min(1, pos / dur) : 0;
-    $('#p-fill').style.width = (f * 100) + '%'; $('#p-knob').style.left = (f * 100) + '%';
-    $('#p-el').textContent = clock(pos); $('#p-rem').textContent = '-' + clock(Math.max(0, dur - pos));
-    $('#p-left').textContent = total(b) ? 'Book: ' + left(total(b) - bookPos(b)).replace(' left', '') + ' left' : '';
-    $('#p-play').innerHTML = ui.state.playing ? I.pause : I.play;
-    $('#p-play').setAttribute('aria-label', ui.state.playing ? 'Pause' : 'Play');
+    setW($('#p-fill'), 'width', (f * 100).toFixed(2) + '%'); setW($('#p-knob'), 'left', (f * 100).toFixed(2) + '%');
+    setT($('#p-el'), clock(pos)); setT($('#p-rem'), '-' + clock(Math.max(0, dur - pos)));
+    setT($('#p-left'), total(b) ? 'Book: ' + left(total(b) - bookPos(b)) : '');
+    const playing = !!ui.state.playing && !ui.state.idle;
+    setH($('#p-play'), playing ? I.pause : I.play);
+    setA($('[data-act=toggle]'), 'aria-label', playing ? 'Pause' : 'Play');
     const spd = ui.state.speed || b.speed || 1;
-    $('#p-speed').textContent = spd.toFixed(2) + 'x';
-    $('#p-speed').classList.toggle('off1', Math.abs(spd - 1) > 0.001);
+    setT($('#p-speed'), spd.toFixed(2) + 'x');
+    if ($('#p-speed').classList.contains('off1') !== (Math.abs(spd - 1) > 0.001)) $('#p-speed').classList.toggle('off1');
     const sl = ui.state.sleep || { mode: 'off' };
     const tm = $('#p-timer');
-    if (sl.mode !== 'off') { tm.className = 'timer'; tm.innerHTML = I.moon + (sl.mode === 'chapter' && sl.rem > 3600e3 ? 'Chapter' : clock(sl.rem)); }
-    else { tm.className = ''; tm.innerHTML = ''; }
-    $('#b-sleep').classList.toggle('on', sl.mode !== 'off');
-    if (ui.sheet === 'bookmarks') renderBookmarks(true);
+    if (sl.mode !== 'off') { if (tm.className !== 'timer') tm.className = 'timer'; setH(tm, I.moon + (sl.mode === 'chapter' && sl.rem > 3600e3 ? 'Chapter' : clock(sl.rem))); }
+    else { if (tm.className) tm.className = ''; setH(tm, ''); }
+    if ($('#b-sleep').classList.contains('on') !== (sl.mode !== 'off')) $('#b-sleep').classList.toggle('on');
+    renderUpNext();
+    if (ui.sheet === 'bookmarks') {
+      // FS-4: rebuild the list only when the bookmarks change; otherwise just the "Add at" time
+      if (ui.bmKey !== bmKey(b)) renderBookmarks(true);
+      else setT($('#bm-at'), 'Add at ' + clock(bookPos(b)));
+    }
+  }
+
+  // ---------- mini-player (above the bottom nav while a book is loaded) ----------
+  function renderMini() {
+    const el = $('#mini'); if (!el) return;
+    const b = ui.state.bookId && !ui.state.idle && byId(ui.state.bookId);
+    const show = !!b && ui.tab !== 'player';
+    if (el.classList.contains('hidden') === show) el.classList.toggle('hidden', !show);
+    document.body.classList.toggle('has-mini', show);
+    if (!b) return;
+    const k = b.id + '|' + (b.thumb || b.cover || '');
+    if (el.dataset.k !== k) {
+      el.dataset.k = k;
+      el.innerHTML = `${cover(b, 'mcv')}</div><div class="mtx"><b id="mini-t"></b><span id="mini-s"></span></div><button class="mpb" data-act="mini-toggle" id="mini-pb"></button>`;
+    }
+    setT($('#mini-t'), M(b).title || b.title);
+    setT($('#mini-s'), total(b) ? left(total(b) - bookPos(b)) : (M(b).author || ''));
+    const playing = !!ui.state.playing;
+    setH($('#mini-pb'), playing ? I.pause : I.play);
+    setA($('#mini-pb'), 'aria-label', playing ? 'Pause' : 'Play');
+  }
+
+  // ---------- up next in series (1.0.7) ----------
+  const atEnd = (b) => { const [t, p] = where(b); const d = ui.state.dur || ((b.tracks[t] || {}).d) || 0; return t >= (b.tracks || []).length - 1 && d > 0 && p >= d - 1500; };
+  function checkFinish() {
+    const b = ui.state.bookId && !ui.state.idle && byId(ui.state.bookId); if (!b) return;
+    const done = !ui.state.playing && atEnd(b);
+    if (done && ui.upNextFor !== b.id) {
+      ui.upNextFor = b.id;
+      if (b.fin === false) engine.setFinished(b.id, null);   // finishing it again clears "Mark unfinished"
+      const nx = FS.upNext(books(), ui.meta, b.id); ui.upNext = nx ? nx.id : null;
+      if (nx && ui.tab !== 'player') toast(`Finished. Up next: ${M(nx).title}`, 'Play', () => playNext(nx.id));
+      renderUpNext();
+    } else if (!done && ui.upNextFor === b.id && ui.state.playing) { ui.upNextFor = null; ui.upNext = null; renderUpNext(); }
+  }
+  function playNext(id) { const b = byId(id); if (!b) return; if (b.fin === true) engine.setFinished(id, null); ui.upNext = null; ui.upNextFor = null; engine.playFromStart(id); go('player'); }
+  function renderUpNext() {
+    const el = $('#p-upnext'); if (!el) return;
+    const nx = ui.upNext && ui.upNextFor === ui.state.bookId && byId(ui.upNext);
+    if (!nx) { if (!el.classList.contains('hidden')) { el.classList.add('hidden'); el.innerHTML = ''; el.dataset.k = ''; } return; }
+    if (el.dataset.k === nx.id) return;
+    const m = M(nx); el.dataset.k = nx.id;
+    el.innerHTML = `${cover(nx, 'ucv')}</div><div class="utx"><span class="uk">Up next${m.number ? ' \u00b7 Book ' + esc(m.number) : ''}</span><b>${esc(m.title)}</b></div>
+      <button class="btn small" data-act="up-next" data-id="${nx.id}">${I.play}Play</button><button class="ux" data-act="up-dismiss" aria-label="Dismiss up next">${I.x}</button>`;
+    el.classList.remove('hidden');
   }
 
   // ---------- sheets ----------
@@ -1459,18 +1714,26 @@ textarea.tpl { min-height: 92px; }
   function renderBookmarks(refresh) {
     const b = byId(ui.state.bookId); if (!b) return;
     const list = b.bm || [];
-    const html = `<h3>Bookmarks</h3><div class="field"><input id="bm-note" maxlength="500" placeholder="Note (optional)"><button class="btn small" data-act="bm-add">Add at ${clock(bookPos(b))}</button></div>
+    ui.bmKey = bmKey(b);
+    const ed = ui.bmEdit != null && list.find((m) => m.c === ui.bmEdit);
+    const html = `<h3>Bookmarks</h3>${ed
+      ? `<div class="field"><input id="bm-note" maxlength="500" placeholder="Note for ${clock(FS.BookMath.toGlobal(durs(b), ed.t, ed.p))}" value="${esc(ed.n || '')}"><button class="btn small" data-act="bm-note-save" data-c="${ed.c}">Save note</button></div>`
+      : `<div class="field"><input id="bm-note" maxlength="500" placeholder="Note (optional)"><button class="btn small" data-act="bm-add" id="bm-at">Add at ${clock(bookPos(b))}</button></div>`}
       <div class="list">${list.length ? list.map((m) => {
         const g = FS.BookMath.toGlobal(durs(b), m.t, m.p); const ci = FS.chapterInfo(b, m.t, m.p);
         return `<div class="li"><button class="go" data-jump="${m.t}:${m.p}"><b>${clock(g)}${ci.count > 1 ? ' · ' + ((b.ch || []).length > 1 ? 'Ch ' : 'Part ') + (ci.index + 1) : ''}</b><span>${esc(m.n || 'No note')}</span></button>
           <button class="bmr" data-bmrecap="${m.c}" aria-label="Recap prompt for this bookmark">${I.history}</button>
           <button class="del" data-del="${m.c}" aria-label="Delete bookmark">${I.x}</button></div>`;
       }).join('') : '<div class="none">No bookmarks in this book yet.</div>'}</div>`;
-    if (refresh) { const s = $('.sheet'); const typing = s && s.contains(document.activeElement) && /^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName); if (s && !typing) s.innerHTML = '<div class="grab"></div>' + html; return; }
+    if (refresh) { const s = $('.sheet'); const typing = s && s.contains(document.activeElement) && /^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName); if (s && !typing) s.innerHTML = '<div class="grab"></div>' + html; else ui.bmKey = null; return; }
     sheet('bookmarks', html);
+    if (ed) setTimeout(() => { const i = $('#bm-note'); if (i) i.focus(); }, 30);
   }
-  function openSettings() {
+  function openSettings(keepScroll) {
+    const sc = keepScroll && $('.sheet') ? $('.sheet').scrollTop : 0;
     const tpl = localStorage.getItem(TPL_KEY) || FS.DEFAULT_TEMPLATE;
+    const sS = ui.lib.skipS || 30, sL = ui.lib.skipL || 60;
+    const opt = (act, v, on, label) => `<button class="opt${on ? ' on' : ''}" data-act="${act}" data-v="${v}" aria-pressed="${on}">${label}</button>`;
     const roots = ui.lib.roots || [];
     sheet('settings', `<h3>Settings</h3>
       <div class="row2"><div class="txt"><b>Library folders</b><span>${roots.length ? 'Books from every folder show up together. Removing a folder keeps your saved spots.' : (ui.lib.demo ? 'Demo books' : 'Not picked yet')}</span></div></div>
@@ -1479,13 +1742,20 @@ textarea.tpl { min-height: 92px; }
       <div class="btns"><button class="btn small" data-act="pick">${I.folder} Add folder</button><button class="btn ghost small" data-act="rescan">Rescan</button><button class="btn ghost small" data-act="report">Scan report</button>${engine.native ? '' : '<button class="btn ghost small" data-act="demo">Demo books</button>'}</div>
       <div class="row2" style="margin-top:8px"><div class="txt"><b>Auto-resume</b><span>Play again when Bluetooth or Android Auto reconnects, if Fireside paused itself in the last 30 min.</span></div>
         <button class="sw ${ui.lib.autoResume !== false ? 'on' : ''}" data-act="auto" role="switch" aria-checked="${ui.lib.autoResume !== false}" aria-label="Auto-resume"></button></div>
+      <h3 style="margin-top:18px" id="set-skips">Skip lengths</h3>
+      <div class="note" style="margin-top:0">Used by the skip buttons here, in the notification and in Android Auto.</div>
+      <div class="sklbl">Small back / forward</div>
+      <div class="opts sk" id="skip-small">${FS.SKIP_SMALL.map((v) => opt('skip-s', v, v === sS, v < 60 ? v + ' s' : '1 min')).join('')}</div>
+      <div class="sklbl">Large back / forward</div>
+      <div class="opts sk" id="skip-large">${FS.SKIP_LARGE.map((v) => opt('skip-l', v, v === sL, v / 60 + ' min')).join('')}</div>
       <h3 style="margin-top:18px" id="set-prompts">Recap prompts</h3>
-      <div class="note" style="margin-top:0">Fields: {series} {n} (or {bookNumber}) {title} {author} {chapter} {timestamp}. A missing field drops its part of the sentence. A bookmark's note is added after its prompt.</div>
+      <button class="link" data-act="fields" aria-expanded="${!!ui.fieldsOpen}" aria-controls="fields-note">${I.info}Fields</button>
+      <div class="note${ui.fieldsOpen ? '' : ' hidden'}" id="fields-note" style="margin-top:0">Fields: {series} {n} (or {bookNumber}) {title} {author} {chapter} {timestamp}. A missing field drops its part of the sentence. A bookmark's note is added after its prompt.</div>
       ${['chapter', 'bookmark', 'before', 'after'].map((k) => `<div class="tplrow"><b>${FS.TEMPLATE_LABELS[k]}</b>
-        <textarea class="tpl" id="${k === 'chapter' ? 'tpl' : 'tpl-' + k}" aria-label="${FS.TEMPLATE_LABELS[k]} template">${esc(k === 'chapter' ? tpl : tplFor(k))}</textarea>
-        <div class="btns"><button class="btn ghost small" data-act="tpl-reset" data-k="${k}">Reset to default</button></div></div>`).join('')}
-      <div class="btns"><button class="btn small" data-act="tpl-save">Save prompts</button></div>
+        <textarea class="tpl" id="${k === 'chapter' ? 'tpl' : 'tpl-' + k}" aria-label="${FS.TEMPLATE_LABELS[k]} template">${esc(k === 'chapter' ? tpl : tplFor(k))}</textarea></div>`).join('')}
+      <div class="btns"><button class="btn small" data-act="tpl-save">Save prompts</button><button class="btn ghost small" data-act="tpl-reset-all">Reset all prompts</button></div>
       <div class="note" style="margin-top:16px">Fireside v${VERSION}${engine.native ? '' : ' · browser preview'}</div>`);
+    if (sc) $('.sheet').scrollTop = sc;
   }
 
   function openReport() {
@@ -1517,12 +1787,11 @@ textarea.tpl { min-height: 92px; }
     for (const k of kinds) ui.recaps[k] = FS.recapPrompt(k, b, { tpl: tplFor(k), meta: m, chapter: chapterOf(t, p), timestamp: ts, note: bm ? bm.n : '' });
     sheet('recap', `<h3>Recap prompts</h3><div class="note" style="margin-top:-6px;margin-bottom:6px">${esc(m.title)}${m.series ? ' \u00b7 ' + esc(seriesLine(m)) : ''}. Copy one, then paste it into your AI chat app.</div>
       ${kinds.map((k) => `<div class="rc"><b>${FS.TEMPLATE_LABELS[k]}</b><p>${esc(ui.recaps[k])}</p>
-        <div class="btns"><button class="btn small" data-rcopy="${k}">Copy</button><button class="btn ghost small" data-rshare="${k}">Share</button></div></div>`).join('')}
+        <div class="btns"><button class="btn small" data-rcopy="${k}">Copy</button><button class="ib share" data-rshare="${k}" aria-label="Share ${esc(FS.TEMPLATE_LABELS[k])} prompt">${I.share}</button></div></div>`).join('')}
       <button class="link" data-act="open-prompts">Edit these prompts in Settings</button>`);
   }
   function copyRecap(k) {
     const s = (ui.recaps || {})[k]; if (!s) return;
-    window.__lastRecap = s;
     closeSheet();
     engine.copyText(s).then((ok) => toast(ok === false ? 'Couldn\u2019t copy. Use Share.' : 'Recap prompt copied', 'Share', () => engine.shareText(s)));
   }
@@ -1543,12 +1812,17 @@ textarea.tpl { min-height: 92px; }
   // ---------- navigation ----------
   function go(tab) {
     if (tab === 'player' && ui.tab !== 'player') ui.prevTab = ui.tab;
+    // FS-7: only a view change made by a real tap/click opens the guard window (so a second fast tap
+    // can't land on the new view). Changes from code, Back, or the native side don't block the next tap.
+    if (tab !== ui.tab) { ui.navAt = ui.clickEl && ui.clickTrusted ? performance.now() : 0; ui.navSrc = ui.clickEl || null; }
     ui.tab = tab;
     ['home', 'library', 'player'].forEach((v) => $('#v-' + v).classList.toggle('hidden', v !== tab));
     $('#nav').classList.toggle('hidden', tab === 'player');
+    document.body.classList.toggle('on-player', tab === 'player');
     document.querySelectorAll('#nav button').forEach((b) => b.classList.toggle('on', b.dataset.tab === tab));
     $('#nav [data-tab=home]').innerHTML = I.homeO + 'Home';   // 1.0.6: one glyph per tab, only the colour changes
     $('#nav [data-tab=library]').innerHTML = I.lib + 'Library';
+    renderMini();
   }
   window.firesideBack = () => {
     if (ui.sheet) { closeSheet(); return true; }
@@ -1558,9 +1832,16 @@ textarea.tpl { min-height: 92px; }
   };
 
   // ---------- events ----------
+  // FS-7: for 350 ms after a view change, a second fast tap (or a double-click, or a click whose press started
+  // before the change) must not land on the new view. Taps on the element that changed the view still count.
+  document.addEventListener('pointerdown', (e) => { ui.downAt = performance.now(); ui.downType = e.pointerType; }, true);
   document.addEventListener('click', (ev) => {
-    const el = ev.target.closest('[data-act],[data-play],[data-pick],[data-open],[data-tab],[data-sleep],[data-jump],[data-del],[data-bmrecap],[data-rcopy],[data-rshare],.chip');
+    if (ev.isTrusted && ui.navAt && performance.now() - ui.navAt < 350 && !(ui.navSrc && ui.navSrc.isConnected && ui.navSrc.contains(ev.target)) &&
+        (ui.downType === 'touch' || ev.detail > 1 || ui.navAt > (ui.downAt || 0))) { ev.preventDefault(); ev.stopPropagation(); return; }
+    if (ui.longPressed) { ui.longPressed = false; if (ev.target.closest('[data-act=bm-quick]')) return; }
+    const el = ev.target.closest('[data-act],[data-play],[data-pick],[data-tab],[data-sleep],[data-jump],[data-del],[data-bmrecap],[data-rcopy],[data-rshare],.chip');
     if (!el) return;
+    ui.clickEl = el; ui.clickTrusted = ev.isTrusted; setTimeout(() => { ui.clickEl = null; ui.clickTrusted = false; }, 0);
     if (el.classList.contains('scrim') && ev.target !== el) return;
     const d = el.dataset;
     if (d.tab) { if (d.tab === 'player') go('player'); else go(d.tab); return; }
@@ -1569,17 +1850,29 @@ textarea.tpl { min-height: 92px; }
     if (d.rcopy) { copyRecap(d.rcopy); return; }
     if (d.rshare) { const s2 = (ui.recaps || {})[d.rshare]; if (s2) engine.shareText(s2); return; }
     if (d.bmrecap) { const b = byId(ui.state.bookId); const bm = b && (b.bm || []).find((x) => String(x.c) === d.bmrecap); if (bm) openRecap(b, 'bookmark', bm); return; }
-    if (d.open && !ev.target.closest('[data-act]')) { if (ui.state.bookId !== d.open) engine.play(d.open); go('player'); return; }
     if (el.classList.contains('chip')) { ui.filter = d.f; renderLibrary(); return; }
     if (d.sleep) { d.sleep === 'chapter' ? engine.sleep(0, true) : engine.sleep(+d.sleep, false); closeSheet(); toast(d.sleep === 'chapter' ? 'Sleeping at the end of this chapter' : `Sleep timer: ${d.sleep} min`); return; }
-    if (d.jump) { const [t, p] = d.jump.split(':').map(Number); engine.jump(t, p); closeSheet(); toast('Jumped to bookmark'); return; }
+    if (d.jump) { const [t, p] = d.jump.split(':').map(Number); closeSheet(); withUndo(() => engine.jump(t, p), 'Jumped to bookmark', true); return; }
     if (d.del) { engine.deleteBookmark(ui.state.bookId, +d.del); return; }
     switch (d.act) {
       case 'toggle': if (ui.state.bookId || ui.lib.last) { if (!ui.state.bookId || ui.state.idle) engine.play(ui.state.bookId || ui.lib.last); else engine.toggle(); } break;
-      case 'skip': engine.skip(+d.ms); break;
-      case 'speed': engine.setSpeed(FS.stepSpeed(ui.state.speed || 1, +d.dir)); break;
+      case 'skip': { const ms = +d.ms; if (Math.abs(ms) >= FS.UNDO_MIN_MS) withUndo(() => engine.skip(ms), (ms < 0 ? 'Back ' : 'Forward ') + FS.skipLabel(Math.abs(ms) / 1000).replace(/^(\d+)$/, '$1 s'), true); else engine.skip(ms); break; }
+      case 'speed': engine.setSpeed(FS.stepSpeed(ui.state.speed || 1, +d.dir)); speedTip(); break;
       case 'speed-reset': engine.setSpeed(1); toast('Speed 1.00x'); break;
-      case 'chapter': engine.chapter(+d.dir); break;
+      case 'chapter': withUndo(() => engine.chapter(+d.dir), d.dir < 0 ? 'Previous chapter' : 'Next chapter', true); break;
+      case 'mini-toggle': engine.toggle(); break;
+      case 'mini-open': go('player'); break;
+      case 'up-next': playNext(d.id); break;
+      case 'up-dismiss': ui.upNext = null; renderUpNext(); break;
+      case 'bm-quick': quickBookmark(); break;
+      case 'bm-note-save': { const c = +d.c; engine.setBookmarkNote(ui.state.bookId, c, $('#bm-note').value); ui.bmEdit = null; toast('Note saved'); setTimeout(() => renderBookmarks(true), 120); break; }
+      case 'fin-toggle': { const b = byId(d.id); if (!b) break; const was = finished(b); const prev = b.fin === true || b.fin === false ? b.fin : null;
+        engine.setFinished(d.id, !was);
+        toast(was ? 'Marked unfinished. Your spot is kept.' : 'Marked finished', 'Undo', () => engine.setFinished(d.id, prev)); break; }
+      case 'hide-fin': engine.setHideFinished(!(ui.lib.hideFinished === true)); break;
+      case 'skip-s': engine.setSkips(+d.v, ui.lib.skipL || 60); break;
+      case 'skip-l': engine.setSkips(ui.lib.skipS || 30, +d.v); break;
+      case 'fields': ui.fieldsOpen = !ui.fieldsOpen; $('#fields-note').classList.toggle('hidden', !ui.fieldsOpen); el.setAttribute('aria-expanded', String(ui.fieldsOpen)); break;
       case 'root-rm':
         if (ui.armed !== d.uri) { ui.armed = d.uri; openSettings(); clearTimeout(ui.armT); ui.armT = setTimeout(() => { ui.armed = null; if (ui.sheet === 'settings') openSettings(); }, 4000); }
         else { ui.armed = null; engine.removeFolder(d.uri); toast('Folder removed. Saved spots are kept.'); setTimeout(openSettings, 80); }
@@ -1595,11 +1888,14 @@ textarea.tpl { min-height: 92px; }
       case 'demo': closeSheet(); loadDemo(true); break;
       case 'sleep': openSleep(); break;
       case 'sleep-off': engine.sleepCancel(); closeSheet(); break;
-      case 'sleep-custom': { const m = parseInt($('#sl-custom').value, 10); if (m > 0) { engine.sleep(Math.min(m, 600), false); closeSheet(); toast(`Sleep timer: ${m} min`); } break; }
-      case 'bookmarks': renderBookmarks(false); break;
+      case 'sleep-custom': { const m = parseInt($('#sl-custom').value, 10); if (m > 0) { const mm = Math.min(m, 600); engine.sleep(mm, false); closeSheet(); toast(`Sleep timer: ${mm} min`); } break; }
       case 'bm-add': engine.addBookmark($('#bm-note').value); $('#bm-note').value = ''; toast('Bookmark added'); setTimeout(() => renderBookmarks(true), 100); break;
       case 'recap': openRecap(byId(ui.state.bookId), 'player'); break;
-      case 'hero-play': playBook(d.id); break;
+      case 'hero-play': {
+        const b = byId(d.id); if (!b) break;
+        if (ui.state.bookId === d.id && !ui.state.idle && ui.state.playing) { engine.toggle(); break; }   // Pause stays on Home
+        if (finished(b)) { if (b.fin === true) engine.setFinished(d.id, null); engine.playFromStart(d.id); go('player'); } else playBook(d.id);
+        break; }
       case 'clear-q': ui.query = ''; $('#q').value = ''; renderLibrary(); break;
       case 'open-prompts': openSettings(); setTimeout(() => { const h = $('#set-prompts'); if (h) h.scrollIntoView({ block: 'start' }); }, 30); break;
       case 'hero-recap': openRecap(byId(d.id), 'hero'); break;
@@ -1607,18 +1903,28 @@ textarea.tpl { min-height: 92px; }
       case 'tpl-save':
         for (const k of Object.keys(FS.TEMPLATES)) { const ta = $(k === 'chapter' ? '#tpl' : '#tpl-' + k); if (!ta) continue; const v = ta.value.trim(); if (!v || v === FS.TEMPLATES[k]) localStorage.removeItem(tplKey(k)); else localStorage.setItem(tplKey(k), v); }
         toast('Recap prompts saved'); break;
-      case 'tpl-reset': { const k = d.k || 'chapter'; localStorage.removeItem(tplKey(k)); const ta = $(k === 'chapter' ? '#tpl' : '#tpl-' + k); if (ta) ta.value = FS.TEMPLATES[k]; toast(FS.TEMPLATE_LABELS[k] + ' prompt reset'); break; }
+      case 'tpl-reset-all': for (const k of Object.keys(FS.TEMPLATES)) { localStorage.removeItem(tplKey(k)); const ta = $(k === 'chapter' ? '#tpl' : '#tpl-' + k); if (ta) ta.value = FS.TEMPLATES[k]; } toast('All recap prompts reset'); break;
       case 'close-sheet': if (ev.target === el) closeSheet(); break;
     }
   });
-  $('#q').addEventListener('input', (e) => { ui.query = e.target.value; renderLibrary(); });
+  let qT;   // FS-5: filter 120 ms after the last key
+  $('#q').addEventListener('input', (e) => { ui.query = e.target.value; clearTimeout(qT); qT = setTimeout(renderLibrary, 120); });
+  // Bookmarks pill: tap saves right away, long-press (or right-click) opens the list
+  const bmPill = $('[data-act=bm-quick]');
+  bmPill.addEventListener('contextmenu', (e) => { e.preventDefault(); clearTimeout(ui.lpT); if (!ui.longPressed) openBookmarks(); ui.longPressed = true; setTimeout(() => { ui.longPressed = false; }, 600); });
+  bmPill.addEventListener('pointerdown', () => { clearTimeout(ui.lpT); ui.longPressed = false; ui.lpT = setTimeout(() => { ui.longPressed = true; openBookmarks(); }, 550); });
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach((t) => bmPill.addEventListener(t, () => clearTimeout(ui.lpT)));
   // seek bar (current file)
   const seek = $('#p-seek');
   const frac = (e) => { const r = seek.getBoundingClientRect(); return Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)); };
   const dur = () => ui.state.dur || 0;
   seek.addEventListener('pointerdown', (e) => { if (!dur()) return; seek.setPointerCapture(e.pointerId); ui.seeking = frac(e) * dur(); renderPlayer(); });
   seek.addEventListener('pointermove', (e) => { if (ui.seeking == null) return; ui.seeking = frac(e) * dur(); renderPlayer(); });
-  seek.addEventListener('pointerup', (e) => { if (ui.seeking == null) return; engine.seek(frac(e) * dur()); ui.seeking = null; });
+  seek.addEventListener('pointerup', (e) => {
+    if (ui.seeking == null) return; const to = frac(e) * dur(); ui.seeking = null;
+    const b = byId(ui.state.bookId); const from = b ? where(b)[1] : to;
+    if (Math.abs(to - from) >= 10e3) withUndo(() => engine.seek(to), 'Moved to ' + clock(b ? FS.BookMath.toGlobal(durs(b), where(b)[0], to) : to), true); else engine.seek(to);
+  });
 
   // ---------- browser preview: demo books with generated tone audio ----------
   function demoAudio(b, t) {
@@ -1647,6 +1953,39 @@ textarea.tpl { min-height: 92px; }
     if (toastIt) toast('Demo books loaded');
   }
 
+  // ---------- undo jump (1.0.7) ----------
+  /** Run a big move (chapter, scrub, bookmark, big skip) and offer "Back to <where it was>". */
+  function withUndo(fn, msg, show) {
+    const b = ui.state.bookId && !ui.state.idle && byId(ui.state.bookId);
+    if (!b) { fn(); return; }
+    const [t, p] = where(b); const g = bookPos(b); const id = b.id;
+    fn();
+    if (show) toast(msg, 'Back to ' + clock(g), () => { if (ui.state.bookId === id) engine.jump(t, p); });
+  }
+  function openBookmarks(edit) { ui.bmEdit = edit != null ? edit : null; renderBookmarks(false); }
+  function quickBookmark() {
+    const b = ui.state.bookId && byId(ui.state.bookId);
+    if (!b || ui.state.idle) { toast('Play a book to add a bookmark'); return; }
+    const at = clock(bookPos(b)); const id = b.id;
+    engine.addBookmark('');
+    toast(`Bookmarked ${at}`, 'Add note', () => { const bb = byId(id); const l = (bb && bb.bm) || []; const nw = l.reduce((a, m) => (!a || m.c > a.c ? m : a), null); openBookmarks(nw ? nw.c : null); });
+  }
+  function speedTip() {
+    if (localStorage.getItem('fireside.tip.speed')) return;
+    localStorage.setItem('fireside.tip.speed', '1');
+    setTimeout(() => toast('Tip: tap the speed number to go back to 1.00x'), 0);
+  }
+  /** Skip buttons follow Settings > Skip lengths. */
+  function applySkips() {
+    const sS = ui.lib.skipS || 30, sL = ui.lib.skipL || 60;
+    if (ui.skipsShown === sS + '/' + sL) return; ui.skipsShown = sS + '/' + sL;
+    [['#i-b60', -sL], ['#i-b30', -sS], ['#i-f30', sS], ['#i-f60', sL]].forEach(([sel, sec]) => {
+      const c = $(sel); if (!c) return; const btn = c.closest('button');
+      c.innerHTML = skipIcon(FS.skipLabel(Math.abs(sec)), sec < 0);
+      btn.dataset.ms = String(sec * 1000); btn.setAttribute('aria-label', FS.skipSpoken(Math.abs(sec), sec < 0));
+    });
+  }
+
   function playBook(id) {
     if (!id || !byId(id)) return;
     if (ui.state.bookId === id && !ui.state.idle) { if (!ui.state.playing) engine.toggle(); } else engine.play(id);
@@ -1670,11 +2009,10 @@ textarea.tpl { min-height: 92px; }
   // ---------- static icons ----------
   const put = (sel, html) => { const el = $(sel); if (el) el.outerHTML = html; };
   $('.ring').innerHTML = I.gear; $('.ptop .x').innerHTML = I.chev;
-  put('#i-search', I.search); put('#i-moon', I.moon); put('#i-mark', I.mark); put('#i-spark', I.history); put('#i-now', I.now);
+  put('#i-search', I.search); put('#i-moon', I.moon); put('#i-mark', I.mark); put('#i-recap', I.history); put('#i-now', I.now);
   $('#i-minus').innerHTML = I.minus; $('#i-plus').innerHTML = I.plus;
   $('#i-cprev').innerHTML = I.cprev; $('#i-cnext').innerHTML = I.cnext;
-  $('#i-b60').innerHTML = skipIcon('1m', true); $('#i-b30').innerHTML = skipIcon('30', true);
-  $('#i-f30').innerHTML = skipIcon('30', false); $('#i-f60').innerHTML = skipIcon('1m', false);
+  applySkips();
 
   // ---------- start ----------
   go('home');
