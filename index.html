@@ -67,7 +67,8 @@ h2 { font-size: 17px; font-weight: 600; margin: 18px 0 10px; }
 
 /* covers */
 .cv { position: relative; overflow: hidden; background: var(--card-2); border: 1px solid var(--line); }
-.cv img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* the real cover sits above the generated title tile (1.0.0 painted the tile over it) */
+.cv img { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; object-fit: cover; display: block; }
 .tile { position: absolute; inset: 0; display: grid; place-items: center; padding: 10px; text-align: center; font-weight: 700; font-size: 15px; line-height: 1.2; color: #fff; }
 
 /* bars */
@@ -102,8 +103,8 @@ h2 { font-size: 17px; font-weight: 600; margin: 18px 0 10px; }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px 12px; }
 .gc { text-align: left; min-width: 0; }
 .gc .cv { width: 100%; aspect-ratio: 3 / 2; border-radius: 12px; }
-.gc .bar { position: absolute; left: 8px; right: 8px; bottom: 7px; height: 3px; background: rgba(58, 60, 69, 0.9); }
-.gc .done { position: absolute; right: 8px; bottom: 8px; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; }
+.gc .bar { position: absolute; z-index: 2; left: 8px; right: 8px; bottom: 7px; height: 3px; background: rgba(58, 60, 69, 0.9); }
+.gc .done { position: absolute; z-index: 2; right: 8px; bottom: 8px; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; }
 .gc .done svg { width: 16px; height: 16px; }
 .gc .t { font-size: 15px; font-weight: 600; margin-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .gc .a { color: var(--muted); font-size: 13px; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -126,6 +127,10 @@ h2 { font-size: 17px; font-weight: 600; margin: 18px 0 10px; }
 .pcover { width: min(100%, calc(100vh - 590px), 440px); min-width: 150px; aspect-ratio: 1; margin: 8px auto 0; border-radius: var(--radius); box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5); }
 .ptitle { font-size: 26px; font-weight: 700; margin: 20px 0 0; line-height: 1.15; letter-spacing: -0.3px; }
 .pauthor { color: var(--muted); font-size: 15px; margin-top: 6px; }
+.chapnav { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+.chapnav .pchap { flex: 1; min-width: 0; text-align: center; margin-top: 0; }
+.cn { width: var(--tap); height: var(--tap); flex: none; display: grid; place-items: center; border-radius: 50%; color: var(--text); background: var(--card-2); border: 1px solid var(--line); }
+.cn svg { width: 22px; height: 22px; }
 .pchap { color: var(--accent); font-size: 15px; font-weight: 500; margin-top: 8px; min-height: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .seek { margin-top: 16px; position: relative; height: 24px; touch-action: none; cursor: pointer; }
 .seek .tr { position: absolute; left: 0; right: 0; top: 10px; height: 4px; border-radius: 2px; background: var(--track); }
@@ -145,7 +150,8 @@ h2 { font-size: 17px; font-weight: 600; margin: 18px 0 10px; }
 .speed { display: flex; align-items: center; justify-content: space-between; width: 170px; height: var(--tap); margin: 12px auto 0; border-radius: 24px; background: var(--card-2); border: 1px solid var(--line); }
 .speed button { width: var(--tap); height: var(--tap); display: grid; place-items: center; }
 .speed button svg { width: 20px; height: 20px; }
-.speed b { font-size: 17px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.speed .sv { width: auto; min-width: 72px; height: 40px; padding: 0 10px; border-radius: 20px; font-size: 17px; font-weight: 500; font-variant-numeric: tabular-nums; color: var(--text); }
+.speed .sv.off1 { color: var(--accent); }
 .speedcap { text-align: center; color: var(--muted); font-size: 12px; margin-top: 8px; }
 .extras { display: flex; justify-content: center; gap: 8px; margin-top: 14px; }
 .pill { height: var(--tap); padding: 0 14px; border-radius: 24px; background: var(--card-2); border: 1px solid var(--line); display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: #D5D6DD; }
@@ -175,6 +181,15 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
 .row2 .txt { min-width: 0; }
 .row2 .txt b { display: block; font-weight: 500; font-size: 15px; }
 .row2 .txt span { color: var(--muted); font-size: 13px; }
+.row2 .txt span.path { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row2 .fi { flex: none; color: var(--muted); }
+.row2 .fi svg { width: 20px; height: 20px; }
+.row2 .txt.grow { flex: 1; }
+.btn.small svg { width: 18px; height: 18px; flex: none; }
+.btn { white-space: nowrap; }
+.rootrm { min-width: var(--tap); height: var(--tap); flex: none; display: grid; place-items: center; color: var(--muted); border-radius: 24px; font-size: 13px; padding: 0 8px; }
+.rootrm svg { width: 20px; height: 20px; }
+.rootrm.arm { color: #fff; background: #8a2a2a; padding: 0 14px; }
 .sw { width: 52px; height: 32px; border-radius: 16px; background: var(--track); position: relative; flex: none; }
 .sw::after { content: ""; position: absolute; top: 4px; left: 4px; width: 24px; height: 24px; border-radius: 50%; background: #fff; transition: left .15s; }
 .sw.on { background: var(--accent); }
@@ -212,7 +227,7 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
       <div class="cv pcover" id="p-cover"></div>
       <div class="ptitle" id="p-title"></div>
       <div class="pauthor" id="p-author"></div>
-      <div class="pchap" id="p-chap"></div>
+      <div class="chapnav"><button class="cn" data-act="chapter" data-dir="-1" aria-label="Previous chapter" id="i-cprev"></button><div class="pchap" id="p-chap"></div><button class="cn" data-act="chapter" data-dir="1" aria-label="Next chapter" id="i-cnext"></button></div>
       <div class="seek" id="p-seek" aria-label="Seek"><div class="tr"></div><div class="fl" id="p-fill"></div><div class="kn" id="p-knob"></div></div>
       <div class="times"><b id="p-el">0:00</b><span id="p-rem">-0:00</span></div>
       <div class="bookleft" id="p-left"></div>
@@ -223,8 +238,8 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
         <button class="cb" data-act="skip" data-ms="30000" aria-label="Forward 30 seconds"><span class="c" id="i-f30"></span><span class="lbl"></span></button>
         <button class="cb" data-act="skip" data-ms="60000" aria-label="Forward 1 minute"><span class="c" id="i-f60"></span><span class="lbl">+1m</span></button>
       </div>
-      <div class="speed"><button data-act="speed" data-dir="-1" aria-label="Slower" id="i-minus"></button><b id="p-speed">1.00x</b><button data-act="speed" data-dir="1" aria-label="Faster" id="i-plus"></button></div>
-      <div class="speedcap">Speed · 5% steps</div>
+      <div class="speed"><button data-act="speed" data-dir="-1" aria-label="Slower" id="i-minus"></button><button class="sv" id="p-speed" data-act="speed-reset" aria-label="Playback speed. Tap to reset to 1.00x">1.00x</button><button data-act="speed" data-dir="1" aria-label="Faster" id="i-plus"></button></div>
+      <div class="speedcap">Speed · 5% steps · tap the number for 1.00x</div>
       <div class="extras">
         <button class="pill" id="b-sleep" data-act="sleep"><span id="i-moon"></span>Sleep</button>
         <button class="pill" data-act="bookmarks"><span id="i-mark"></span>Bookmarks</button>
@@ -276,6 +291,18 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
     chapterEnds(d, ch) {
       if (d.length === 1 && ch && ch.length > 1) return ch.slice(1).map((c) => c.s).concat([d[0]]).filter((x) => x > 0);
       let acc = 0; return d.map((x) => (acc += x));
+    },
+    /** Chapter starts (global ms): embedded marks for a one-file book, else each file's start. */
+    chapterStarts(d, ch) {
+      if (d.length === 1 && ch && ch.length > 1) return ch.map((c) => c.s).sort((a, b) => a - b);
+      let acc = 0; return d.map((x) => { const s = acc; acc += x; return s; });
+    },
+    /** Previous: this chapter's start when more than 3 s in, else the one before. Next: null on the last chapter. */
+    chapterTarget(starts, g, dir, restart) {
+      if (!starts.length) return dir < 0 ? 0 : null;
+      let i = 0; for (let k = 0; k < starts.length; k++) if (starts[k] <= g) i = k;
+      if (dir < 0) return (g - starts[i] > (restart == null ? 3000 : restart) || i === 0) ? starts[i] : starts[i - 1];
+      return i + 1 < starts.length ? starts[i + 1] : null;
     },
     chapterIndex(ends, g) { for (let i = 0; i < ends.length; i++) if (g < ends[i]) return i; return Math.max(0, ends.length - 1); },
   };
@@ -364,16 +391,16 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
     return { index: 0, count: 1, name: '', number: '' };
   };
 
-  // ---------- saved spots for the browser preview (same JSON as PositionStore.kt, v2) ----------
+  // ---------- saved spots for the browser preview (same JSON as PositionStore.kt; v2 data reads as-is into v3) ----------
   class WebStore {
     constructor(storage, key) { this.st = storage; this.key = key || 'fireside.positions'; this.load(); }
     load() {
       let o = {};
       try { o = JSON.parse(this.st.getItem(this.key) || '{}'); } catch (e) { o = {}; }
-      this.v = 2; this.books = o.books || {}; this.speed = FS.clampSpeed(o.speed || 1); this.last = o.last || null;
+      this.v = 3; this.from = o.v || (o.books ? 1 : 0); this.books = o.books || {}; this.speed = FS.clampSpeed(o.speed || 1); this.last = o.last || null;
       this.autoResume = o.autoResume !== false;
     }
-    flush() { this.st.setItem(this.key, JSON.stringify({ v: 2, speed: this.speed, last: this.last || '', autoResume: this.autoResume, books: this.books })); }
+    flush() { this.st.setItem(this.key, JSON.stringify({ v: 3, speed: this.speed, last: this.last || '', autoResume: this.autoResume, books: this.books })); }
     get(id) { const b = this.books[id]; return b && b.u ? { t: b.t, p: b.p, u: b.u, s: b.s } : null; }
     save(id, t, p, now) { const b = this.books[id] || (this.books[id] = {}); b.t = Math.max(0, t | 0); b.p = Math.max(0, Math.round(p)); b.u = now || Date.now(); this.last = id; this.flush(); }
     speedFor(id) { return (id && this.books[id] && this.books[id].s) || this.speed; }
@@ -400,6 +427,8 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
       else if (m.type === 'scan') emit('scan', m);
     };
     e.pickFolder = () => bridge.pickFolder();
+    e.removeFolder = (uri) => bridge.removeFolder(uri);
+    e.chapter = (dir) => bridge.chapter(dir < 0 ? -1 : 1);
     e.rescan = () => bridge.rescan();
     e.play = (id) => bridge.play(id);
     e.toggle = () => bridge.toggle();
@@ -425,7 +454,16 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
     let cur = null, track = 0, pendingSeek = null, pausedAt = 0, lastSave = 0;
     let sleep = { mode: 'off', endsAt: 0, chapterEnd: 0, lastMin: 0 };
 
-    const libMsg = () => ({ type: 'library', root: e.root || null, demo: !!e.demo, speed: store.speed, autoResume: store.autoResume, last: store.last,
+    e.folders = [];
+    function mergeFolders() {
+      const seen = new Set(); e.books = [];
+      for (const f of e.folders) for (const b of f.books) if (!seen.has(b.id)) { seen.add(b.id); e.books.push(b); }
+      const nat = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
+      e.books.sort((a, b) => nat.compare(a.title, b.title));
+      e.root = e.folders.map((f) => f.name).join(', ') || null;
+      if (cur && !e.books.some((b) => b.id === cur.id)) { audio.pause(); cur = null; }
+    }
+    const libMsg = () => ({ type: 'library', root: e.root || null, demo: !!e.demo, roots: e.demo ? [] : e.folders.map((f) => ({ uri: f.name, name: f.name, books: f.books.length })), speed: store.speed, autoResume: store.autoResume, last: store.last,
       books: e.books.map((b) => Object.assign({}, b, { spot: store.get(b.id), speed: store.speedFor(b.id), bm: store.bookmarks(b.id) })) });
     e.reload = () => { e.lib = libMsg(); emit('library', e.lib); };
     const durs = (b) => b.tracks.map((x) => x.d || 0);
@@ -528,6 +566,16 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
     e.copyText = (s) => (navigator.clipboard ? navigator.clipboard.writeText(s).then(() => true, () => false) : Promise.resolve(false));
     e.shareText = (s) => { if (navigator.share) navigator.share({ text: s }).catch(() => {}); };
     e.pickFolder = () => opts.pickFiles && opts.pickFiles();
+    e.removeFolder = (name) => { e.folders = e.folders.filter((f) => f.name !== name); mergeFolders(); e.reload(); push(); };
+    e.chapter = (dir) => {
+      if (!cur) return;
+      const d = durs(cur); if (audio.duration && isFinite(audio.duration)) d[track] = Math.round(audio.duration * 1000);
+      const tgt = BM.chapterTarget(BM.chapterStarts(d, cur.ch), BM.toGlobal(d, track, pos()), dir < 0 ? -1 : 1);
+      if (tgt == null) return;
+      const [t, p] = BM.fromGlobal(d, tgt);
+      if (t !== track) setSrc(t, p, !audio.paused); else audio.currentTime = p / 1000;
+      setTimeout(() => saveNow('chapter'), 50);
+    };
     e.rescan = () => e.pickFolder();
     e.urlFor = (b, t) => b.tracks[t].url || (b.tracks[t].url = opts.makeAudio(b, t));
 
@@ -554,12 +602,20 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
         const id = 'w' + hash((rootName || '') + '/' + (single ? audios[0].rel : k));
         const tracks = [];
         for (const a of audios) tracks.push({ name: a.name, d: await durationOf(a.f), url: URL.createObjectURL(a.f) });
+        // Cover: embedded art in the first file, then cover/folder/front image in the folder, then the title tile.
+        let art = null;
+        try { art = await FS.Art.fromFile(audios[0].f); } catch (err) { art = null; }
+        const folderImg = img && (!single || /^(cover|folder|front)\./i.test(img.name)) ? img.f : null;
+        const url = art ? URL.createObjectURL(art) : folderImg ? URL.createObjectURL(folderImg) : makeCover(name);
         books.push({ id, title: name, author: '', folder: !single, added: Date.now(), tracks, ch: [],
-          tags: { name, parent: audios[0].parent || '' },
-          cover: img && !single ? URL.createObjectURL(img.f) : makeCover(name) });
+          tags: { name, parent: audios[0].parent || '' }, art: art ? 'embedded' : folderImg ? 'folder' : 'none',
+          cover: url });
       }
       books.sort((a, b) => nat.compare(a.title, b.title));
-      e.books = books; e.root = rootName || 'Picked folder'; e.demo = false; cur = null;
+      if (e.demo) { e.folders = []; cur = null; }
+      const fname = rootName || 'Picked folder';
+      e.folders = e.folders.filter((f) => f.name !== fname).concat([{ name: fname, books }]);
+      e.demo = false; mergeFolders();
       e.reload(); push();
     };
     function durationOf(file) {
@@ -570,9 +626,81 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
         a.onerror = () => { res(0); URL.revokeObjectURL(u); };
       });
     }
-    e.useBooks = (books, root, demo) => { e.books = books; e.root = root; e.demo = demo; e.reload(); push(); };
+    e.useBooks = (books, root, demo) => { e.books = books; e.root = root; e.demo = demo; if (demo) e.folders = []; e.reload(); push(); };
     e.current = () => cur;
     return e;
+  };
+
+  // ---------- embedded cover art for the browser preview (same rules as Media.kt: ID3 APIC/PIC, MP4 covr) ----------
+  const Art = FS.Art = {
+    isImage(b) { return b.length > 8 && ((b[0] === 0xFF && b[1] === 0xD8) || (b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4E)); },
+    mime(b) { return b[0] === 0x89 ? 'image/png' : 'image/jpeg'; },
+    u32(b, o) { return ((b[o] << 24) >>> 0) + (b[o + 1] << 16) + (b[o + 2] << 8) + b[o + 3]; },
+    ss(b, o) { return ((b[o] & 0x7f) << 21) | ((b[o + 1] & 0x7f) << 14) | ((b[o + 2] & 0x7f) << 7) | (b[o + 3] & 0x7f); },
+    skipText(b, p, enc) {
+      if (enc === 1 || enc === 2) { while (p + 1 < b.length && !(b[p] === 0 && b[p + 1] === 0)) p += 2; return p + 2; }
+      while (p < b.length && b[p] !== 0) p++; return p + 1;
+    },
+    /** ID3v2 tag bytes (without the 10-byte header) -> picture bytes, front cover preferred. */
+    fromId3(d, ver) {
+      let p = 0, best = null; const hdr = ver === 2 ? 6 : 10;
+      while (p + hdr <= d.length && d[p] !== 0) {
+        const id = String.fromCharCode(...d.subarray(p, p + (ver === 2 ? 3 : 4)));
+        const len = ver === 2 ? (d[p + 3] << 16) | (d[p + 4] << 8) | d[p + 5] : ver === 3 ? Art.u32(d, p + 4) : Art.ss(d, p + 4);
+        p += hdr; if (len < 0 || p + len > d.length) break;
+        const f = d.subarray(p, p + len); p += len;
+        if ((id !== 'APIC' && id !== 'PIC') || f.length < 4) continue;
+        const enc = f[0]; let q, type;
+        if (id === 'APIC') { q = 1; while (q < f.length && f[q] !== 0) q++; q++; type = f[q]; q = Art.skipText(f, q + 1, enc); }
+        else { type = f[4]; q = Art.skipText(f, 5, enc); }
+        const img = f.subarray(q);
+        if (!Art.isImage(img)) continue;
+        if (type === 3) return img; if (!best) best = img;
+      }
+      return best;
+    },
+    child(d, from, to, type) {
+      let p = from;
+      while (p + 8 <= to) {
+        const size = Art.u32(d, p); if (size < 8 || p + size > to) return null;
+        if (String.fromCharCode(d[p + 4], d[p + 5], d[p + 6], d[p + 7]) === type) return [p + 8, p + size];
+        p += size;
+      }
+      return null;
+    },
+    fromMoov(m) {
+      const u = Art.child(m, 0, m.length, 'udta'); if (!u) return null;
+      const meta = Art.child(m, u[0], u[1], 'meta'); if (!meta) return null;
+      const mf = String.fromCharCode(...m.subarray(meta[0] + 4, meta[0] + 8)) === 'hdlr' ? meta[0] : meta[0] + 4;
+      const il = Art.child(m, mf, meta[1], 'ilst'); if (!il) return null;
+      const cv = Art.child(m, il[0], il[1], 'covr'); if (!cv) return null;
+      const dt = Art.child(m, cv[0], cv[1], 'data'); if (!dt) return null;
+      const img = m.subarray(dt[0] + 8, dt[1]);
+      return Art.isImage(img) ? img : null;
+    },
+    /** File/Blob -> image Blob or null. Reads only the tag / moov box, not the audio. */
+    async fromFile(file) {
+      const rd = async (a, b) => new Uint8Array(await file.slice(a, b).arrayBuffer());
+      const h = await rd(0, 12);
+      if (h[0] === 0x49 && h[1] === 0x44 && h[2] === 0x33) {
+        const ver = h[3], size = Art.ss(h, 6);
+        const img = Art.fromId3(await rd(10, 10 + size), ver);
+        return img ? new Blob([img], { type: Art.mime(img) }) : null;
+      }
+      if (String.fromCharCode(h[4], h[5], h[6], h[7]) !== 'ftyp') return null;
+      let p = 0;
+      while (p + 8 <= file.size) {
+        const b = await rd(p, p + 16); let size = Art.u32(b, 0), hdr = 8;
+        if (size === 1) { size = Art.u32(b, 8) * 4294967296 + Art.u32(b, 12); hdr = 16; }
+        if (size < hdr) return null;
+        if (String.fromCharCode(b[4], b[5], b[6], b[7]) === 'moov') {
+          const img = Art.fromMoov(await rd(p + hdr, p + size));
+          return img ? new Blob([img], { type: Art.mime(img) }) : null;
+        }
+        p += size;
+      }
+      return null;
+    },
   };
 
   function hash(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(16); }
@@ -589,7 +717,7 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
   const FS = window.FS;
   const $ = (s, r) => (r || document).querySelector(s);
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const VERSION = '1.0.0';
+  const VERSION = '1.0.1';
   const TPL_KEY = 'fireside.recapTemplate';
 
   // ---------- icons (inline SVG, currentColor) ----------
@@ -614,13 +742,19 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
     mark: sv('<path d="M6 3.5h12v17l-6-4.5-6 4.5z"/>'),
     spark: sv('<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/>'),
     x: sv('<path d="M6 6l12 12M18 6 6 18"/>'),
+    cprev: sv('<path d="M6 5v14"/><path d="M18 6 9.5 12 18 18z" fill="currentColor"/>'),
+    cnext: sv('<path d="M18 5v14"/><path d="M6 6l8.5 6L6 18z" fill="currentColor"/>'),
     folder: sv('<path d="M3 6.5A1.5 1.5 0 0 1 4.5 5h4.2l2 2.2h8.8A1.5 1.5 0 0 1 21 8.7v9.8a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18.5z"/>'),
   };
 
   // ---------- engine ----------
   const ui = { lib: { books: [] }, state: {}, tab: 'home', prevTab: 'home', filter: 'all', query: '', seeking: null };
   const emit = (type, m) => {
-    if (type === 'library') { ui.lib = m; renderLists(); renderPlayer(); }
+    if (type === 'library') {
+      const rootsChanged = JSON.stringify((ui.lib || {}).roots || []) !== JSON.stringify(m.roots || []);
+      ui.lib = m; renderLists(); renderPlayer();
+      if (rootsChanged && ui.sheet === 'settings') openSettings();
+    }
     else if (type === 'state') { const changed = m.bookId !== ui.state.bookId; ui.state = m; if (changed) renderLists(); else updateLive(); renderPlayer(); }
     else if (type === 'scan') showScan(m);
   };
@@ -664,9 +798,11 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
   }
   const fmtDate = (t) => t ? new Date(t).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '';
   function hue(s) { let h = 0; for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) | 0; return Math.abs(h) % 360; }
-  function cover(b, cls) {
+  /** Cover box: generated title tile underneath, the real cover (thumbnail in lists, full size on Now Playing) on top. */
+  function cover(b, cls, full) {
     const tile = `<div class="tile" style="background:linear-gradient(160deg,hsl(${hue(b.title)} 45% 34%),hsl(${(hue(b.title) + 40) % 360} 40% 16%))">${esc(b.title)}</div>`;
-    return `<div class="cv ${cls || ''}">${tile}${b.cover ? `<img alt="" src="${esc(b.cover)}" onerror="this.remove()">` : ''}`;
+    const src = full ? b.cover : (b.thumb || b.cover);
+    return `<div class="cv ${cls || ''}">${tile}${src ? `<img alt="" src="${esc(src)}" onerror="this.remove()">` : ''}`;
   }
   const chapterLine = (b) => {
     const [t, p] = where(b); const c = FS.chapterInfo(b, t, p);
@@ -730,7 +866,7 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
     $('#p-main').classList.toggle('hidden', !b);
     if (!b) return;
     const key = b.id + '|' + (b.cover || '');
-    if ($('#p-cover').dataset.k !== key) { $('#p-cover').outerHTML = cover(b, 'pcover').replace('class="cv pcover"', 'class="cv pcover" id="p-cover" data-k="' + esc(key) + '"') + '</div>'; }
+    if ($('#p-cover').dataset.k !== key) { $('#p-cover').outerHTML = cover(b, 'pcover', true).replace('class="cv pcover"', 'class="cv pcover" id="p-cover" data-k="' + esc(key) + '"') + '</div>'; }
     $('#p-title').textContent = b.title;
     $('#p-author').textContent = b.author || '';
     const [t, p] = where(b); const ci = FS.chapterInfo(b, t, p);
@@ -743,7 +879,9 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
     $('#p-left').textContent = total(b) ? 'Book: ' + left(total(b) - bookPos(b)).replace(' left', '') + ' left' : '';
     $('#p-play').innerHTML = ui.state.playing ? I.pause : I.play;
     $('#p-play').setAttribute('aria-label', ui.state.playing ? 'Pause' : 'Play');
-    $('#p-speed').textContent = (ui.state.speed || b.speed || 1).toFixed(2) + 'x';
+    const spd = ui.state.speed || b.speed || 1;
+    $('#p-speed').textContent = spd.toFixed(2) + 'x';
+    $('#p-speed').classList.toggle('off1', Math.abs(spd - 1) > 0.001);
     const sl = ui.state.sleep || { mode: 'off' };
     const tm = $('#p-timer');
     if (sl.mode !== 'off') { tm.className = 'timer'; tm.innerHTML = I.moon + (sl.mode === 'chapter' && sl.rem > 3600e3 ? 'Chapter' : clock(sl.rem)); }
@@ -780,9 +918,12 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
   }
   function openSettings() {
     const tpl = localStorage.getItem(TPL_KEY) || FS.DEFAULT_TEMPLATE;
+    const roots = ui.lib.roots || [];
     sheet('settings', `<h3>Settings</h3>
-      <div class="row2"><div class="txt"><b>Audiobooks folder</b><span>${esc(ui.lib.root || (ui.lib.demo ? 'Demo books' : 'Not picked yet'))}</span></div></div>
-      <div class="btns"><button class="btn small" data-act="pick">${I.folder} Pick folder</button><button class="btn ghost small" data-act="rescan">Rescan</button>${engine.native ? '' : '<button class="btn ghost small" data-act="demo">Demo books</button>'}</div>
+      <div class="row2"><div class="txt"><b>Library folders</b><span>${roots.length ? 'Books from every folder show up together. Removing a folder keeps your saved spots.' : (ui.lib.demo ? 'Demo books' : 'Not picked yet')}</span></div></div>
+      ${roots.map((r) => `<div class="row2 root"><span class="fi">${I.folder}</span><div class="txt grow"><b>${esc(r.name)}</b><span class="path">${r.books} book${r.books === 1 ? '' : 's'}</span></div>
+        <button class="rootrm${ui.armed === r.uri ? ' arm' : ''}" data-act="root-rm" data-uri="${esc(r.uri)}" aria-label="Remove folder ${esc(r.name)}">${ui.armed === r.uri ? 'Remove?' : I.x}</button></div>`).join('')}
+      <div class="btns"><button class="btn small" data-act="pick">${I.folder} Add folder</button><button class="btn ghost small" data-act="rescan">Rescan</button>${engine.native ? '' : '<button class="btn ghost small" data-act="demo">Demo books</button>'}</div>
       <div class="row2" style="margin-top:8px"><div class="txt"><b>Auto-resume</b><span>Play again when Bluetooth or Android Auto reconnects, if Fireside paused itself in the last 30 min.</span></div>
         <button class="sw ${ui.lib.autoResume !== false ? 'on' : ''}" data-act="auto" role="switch" aria-checked="${ui.lib.autoResume !== false}" aria-label="Auto-resume"></button></div>
       <h3 style="margin-top:18px">Recap prompt</h3>
@@ -851,6 +992,12 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
       case 'toggle': if (ui.state.bookId || ui.lib.last) { if (!ui.state.bookId || ui.state.idle) engine.play(ui.state.bookId || ui.lib.last); else engine.toggle(); } break;
       case 'skip': engine.skip(+d.ms); break;
       case 'speed': engine.setSpeed(FS.stepSpeed(ui.state.speed || 1, +d.dir)); break;
+      case 'speed-reset': engine.setSpeed(1); toast('Speed 1.00x'); break;
+      case 'chapter': engine.chapter(+d.dir); break;
+      case 'root-rm':
+        if (ui.armed !== d.uri) { ui.armed = d.uri; openSettings(); clearTimeout(ui.armT); ui.armT = setTimeout(() => { ui.armed = null; if (ui.sheet === 'settings') openSettings(); }, 4000); }
+        else { ui.armed = null; engine.removeFolder(d.uri); toast('Folder removed. Saved spots are kept.'); setTimeout(openSettings, 80); }
+        break;
       case 'close': go(ui.prevTab || 'home'); break;
       case 'settings': openSettings(); break;
       case 'pick': closeSheet(); engine.pickFolder(); break;
@@ -909,6 +1056,7 @@ textarea.tpl { width: 100%; padding: 12px; min-height: 110px; resize: vertical; 
   $('.ring').innerHTML = I.gear; $('.ptop .x').innerHTML = I.chev;
   put('#i-search', I.search); put('#i-moon', I.moon); put('#i-mark', I.mark); put('#i-spark', I.spark); put('#i-now', I.now);
   $('#i-minus').innerHTML = I.minus; $('#i-plus').innerHTML = I.plus;
+  $('#i-cprev').innerHTML = I.cprev; $('#i-cnext').innerHTML = I.cnext;
   $('#i-b60').innerHTML = skipIcon('1m', true); $('#i-b30').innerHTML = skipIcon('30', true);
   $('#i-f30').innerHTML = skipIcon('30', false); $('#i-f60').innerHTML = skipIcon('1m', false);
 
